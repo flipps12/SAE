@@ -20,7 +20,7 @@ git clone https://github.com/flipps12/SAE.git
 Entrar al proyecto:
 
 ```bash
-cd REPOSITORIO
+cd SAE
 ```
 
 ---

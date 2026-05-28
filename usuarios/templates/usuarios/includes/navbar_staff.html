@@ -1,0 +1,51 @@
+<ul class="navbar-nav mx-auto">
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'listado_alumnos' %}active{% endif %}" 
+           href="{% url 'listado_alumnos' %}">Alumnos</a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'listado_profesor' %}">Docentes</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'lista_cargos' %}">Cargos</a>
+    </li>
+
+     <li class="nav-item">
+        <a class="nav-link" href="#">Calificaciones</a>
+    </li>
+
+     <li class="nav-item">
+        <a class="nav-link" href="#">Comunicados</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">Asistencia</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">Documentacion</a>
+    </li>
+    
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Configuracion SAE</a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Alumnos</a></li>
+            <li><a class="dropdown-item" href="#">Docentes</a></li>
+            <li><a class="dropdown-item" href="#">Cargos</a></li>
+            <li><a class="dropdown-item" href="#">Especialidades</a></li>
+            <li><a class="dropdown-item" href="#">Cursos</a></li>
+            <li><a class="dropdown-item" href="#">Grupos</a></li>
+            <li><a class="dropdown-item" href="#">Materias</a></li>
+            <li><a class="dropdown-item" href="#">Turnos</a></li>
+        </ul>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Respaldos</a>
+        <ul class="dropdown-menu">
+            <li><a class="nav-link" href="{% url 'importar_alumnos' %}">Importar Alumnos</a></li>
+            
+        </ul>
+    </li>
+</ul>

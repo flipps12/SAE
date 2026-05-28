@@ -1,11 +1,11 @@
 body {
     background-color: #1a1a1a;
     color: white;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     margin: 0;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .navbar {
@@ -135,10 +135,7 @@ body {
     font-size: 12px;
 }
 
-
-
-
-
+/* Campos de Formulario Universales (Modo Oscuro) */
 .form-control, input:not([type="submit"]), select, textarea {
     background-color: #2a2a2a !important;
     border: 1px solid #4a4a4a !important;
@@ -152,6 +149,7 @@ body {
     outline: none !important;
 }
 
+/* Tarjetas */
 .card {
     background-color: #1a1a1a !important;
     border: 1px solid #4a4a4a !important;
@@ -173,9 +171,7 @@ label {
     color: white !important;
 }
 
-
-
-
+/* Botones Base */
 .btn-primary, .btn-warning {
     background-color: #2a2a2a !important;
     border: 1px solid #4a4a4a !important;
@@ -186,4 +182,153 @@ label {
     background-color: #3a3a3a !important;
     border-color: #5a5a5a !important;
     color: white !important;
+}
+
+form.row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Color personalizado para la insignia del curso */
+.badge-curso-sae {
+    background-color: #4a9eff !important;
+    color: #0d0d0d !important;
+    font-weight: 600;
+}
+
+body:has(#particles-canvas) {
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* ====== ESTILOS PARA TABLAS Y LISTADOS (MODO OSCURO COHERENTE) ====== */
+
+.tabla-alumnos-contenedor {
+    max-height: 60vh;
+    overflow-y: auto;
+    background-color: #111111 !important; 
+    border: 1px solid #4a4a4a !important;
+}
+
+/* Forzar que las tablas hereden el texto blanco y fondo oscuro */
+.tabla-alumnos-contenedor table {
+    background-color: #111111 !important;
+    color: #ffffff !important;
+}
+
+.tabla-alumnos-contenedor table th {
+    background-color: #0d0d0d !important;
+    color: #4a9eff !important; /* Títulos de la tabla con el azul de SAE */
+    border-bottom: 2px solid #4a4a4a !important;
+    font-weight: 600;
+}
+
+.tabla-alumnos-contenedor table td {
+    background-color: #111111 !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #2d2d2d !important;
+}
+
+/* Efecto hover sobre las filas de la tabla */
+.tabla-alumnos-contenedor table tr:hover td {
+    background-color: #1d1d1d !important; /* Un gris sutil al pasar el mouse */
+    color: #ffffff !important;
+}
+
+/* Pantalla de carga */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(13, 13, 13, 0.9) !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+#loading-overlay .spinner-border {
+    border-color: transparent !important;
+    border-top-color: #4a9eff !important;
+}
+
+/* Estilos personalizados para la paginación de SAE26 */
+.paginacion-sae .page-link {
+    background-color: #2a2a2a !important;
+    border: 1px solid #4a4a4a !important;
+    color: #e0e0e0 !important;
+    transition: all 0.2s ease;
+    padding: 8px 16px;
+}
+
+.paginacion-sae .page-link:hover {
+    background-color: #3a3a3a !important;
+    border-color: #5a5a5a !important;
+    color: white !important;
+}
+
+.paginacion-sae .page-item.active .page-link {
+    background-color: #4a9eff !important;
+    border-color: #4a9eff !important;
+    color: #0d0d0d !important;
+    font-weight: bold;
+}
+
+.paginacion-sae .page-item.disabled .page-link {
+    background-color: #1a1a1a !important;
+    border-color: #333333 !important;
+    color: #666666 !important;
+}
+
+/* --- AQUÍ LA MAGIA PARA LA BARRA DE DESPLAZAMIENTO MODERNA --- */
+/* Tamaño de la barra */
+.tabla-alumnos-contenedor::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+/* Fondo de la barra */
+.tabla-alumnos-contenedor::-webkit-scrollbar-track {
+    background: #111111; 
+    border-radius: 10px;
+}
+/* El "tirador" de la barra */
+.tabla-alumnos-contenedor::-webkit-scrollbar-thumb {
+    background: #3a3a3a; 
+    border-radius: 10px;
+    border: 2px solid #111111; /* Crea un efecto de separación elegante */
+}
+/* El tirador cuando pasás el mouse */
+.tabla-alumnos-contenedor::-webkit-scrollbar-thumb:hover {
+    background: #4a9eff; /* Cambia al azul SAE al tocarlo */
+}
+
+/* Forzar que las tablas hereden el texto blanco y fondo oscuro */
+.tabla-alumnos-contenedor table {
+    background-color: #111111 !important;
+    color: #ffffff !important;
+}
+
+.tabla-alumnos-contenedor table th {
+    background-color: #0d0d0d !important;
+    color: #4a9eff !important; 
+    border-bottom: 2px solid #4a4a4a !important;
+    font-weight: 600;
+}
+
+/* CORRECCIÓN: Forzamos el color claro en las celdas comunes y quitamos opacidades de Bootstrap */
+.tabla-alumnos-contenedor table td,
+.tabla-alumnos-contenedor table tbody tr td,
+.tabla-alumnos-contenedor table tbody tr td a,
+.tabla-alumnos-contenedor table tbody tr td span:not(.badge) {
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #2d2d2d !important;
+}
+
+/* Efecto hover sobre las filas de la tabla */
+.tabla-alumnos-contenedor table tr:hover td {
+    background-color: #1d1d1d !important; 
+    color: #ffffff !important;
 }

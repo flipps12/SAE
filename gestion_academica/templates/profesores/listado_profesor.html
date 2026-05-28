@@ -1,0 +1,79 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h2 class="mb-4 text-white">Listado de Profesores</h2>
+
+    <form method="GET" action="" class="row g-3 mb-4 p-3 card flex-row flex-wrap align-items-end">
+        <div class="col-md-11">
+            <label for="q" class="form-label fw-bold">Buscador General</label>
+            <input type="text" name="q" id="q" class="form-control" placeholder="Buscar por Nombre, Apellido, DNI o Legajo..." value="{{ search_query|default:'' }}">
+        </div>
+
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </form>
+
+    <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>CUIL</th>
+                    <th>Apellido y Nombre</th>
+                    <th>Legajo</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th class="text-center">Materias</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for profesor in profesores %}
+                <tr>
+                    <td class="fw-bold">
+                        {{ profesor.persona.cuil|slice:":2" }}-{{ profesor.persona.cuil|slice:"2:10" }}-{{ profesor.persona.cuil|slice:"10:" }}
+                    </td>
+                    
+                    <td>{{ profesor.persona.apellido }}, {{ profesor.persona.nombre }}</td>
+                    
+                    <td>{{ profesor.persona.numero_legajo }}</td>
+                    
+                    <td>{{ profesor.persona.email|default:"-" }}</td>
+                    
+                    <td>{{ profesor.persona.telefono|default:"-" }}</td>
+                    
+                    <td class="text-center">
+                        <button type="button" class="btn btn-link text-info p-0 border-0" title="Ver materias asignadas" style="box-shadow: none;">
+                            <i class="fa-solid fa-book-bookmark fs-5"></i>
+                        </button>
+                    </td>
+                    
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-link text-light p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="box-shadow: none;">
+                                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                            </button>
+                            
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-menu-item dropdown-item text-muted ps-3" href="#">
+                                        <i class="fa-solid fa-clock me-2 text-warning"></i> Próximamente...
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">
+                        No se encontraron profesores que coincidan con los criterios de búsqueda.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

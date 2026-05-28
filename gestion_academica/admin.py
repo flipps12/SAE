@@ -5,7 +5,7 @@ from .models import (
     Preceptor, Alumno, Materia, Curso, Dictado, Asistencia,
     NotaEtapa, PersonalNoDocente, TipoCargo, PersonalCargo, HistorialAcademico,
     AsignacionPreceptor, Burbuja, NotaActividad, Intensificacion, HorarioDictado,
-    Persona, AsignacionCargo
+    Persona, AsignacionCargo, InscripcionDictado
 )
 
 # --------------------------------------------------------------------------------------
@@ -277,6 +277,39 @@ class IntensificacionAdmin(admin.ModelAdmin):
 class TipoCargoAdmin(admin.ModelAdmin):
     search_fields = ['nombre'] 
     list_display = ('nombre',)
+
+# --------------------------------------------------------------------------------------
+
+@admin.register(InscripcionDictado)
+class InscripcionDictadoAdmin(admin.ModelAdmin):
+    # Columnas que se van a ver en el listado principal del admin
+    list_display = ('get_alumno_apellido', 'get_alumno_nombre', 'get_materia_nombre', 'get_curso', 'condicion', 'ciclo_lectivo')
+    
+    # Filtros laterales para buscar rápido por año, curso o condición
+    list_filter = ('ciclo_lectivo', 'condicion', 'dictado__curso')
+    
+    # Buscador para encontrar alumnos por apellido, nombre o documento
+    search_fields = ('alumno__persona__apellido', 'alumno__persona__nombre', 'alumno__persona__dni', 'dictado__materia__nombre')
+    
+    # Optimización de consultas para que el admin no se ponga lento (evita el problema N+1)
+    list_select_related = ('alumno__persona', 'dictado__materia', 'dictado__curso', 'ciclo_lectivo')
+
+    # Métodos auxiliares para mostrar los datos de las relaciones limpiamente en las columnas
+    @admin.display(ordering='alumno__persona__apellido', description='Apellido')
+    def get_alumno_apellido(self, obj):
+        return obj.alumno.persona.apellido
+
+    @admin.display(ordering='alumno__persona__nombre', description='Nombre')
+    def get_alumno_nombre(self, obj):
+        return obj.alumno.persona.nombre
+
+    @admin.display(ordering='dictado__materia__nombre', description='Materia')
+    def get_materia_nombre(self, obj):
+        return obj.dictado.materia.nombre
+
+    @admin.display(ordering='dictado__curso', description='Curso')
+    def get_curso(self, obj):
+        return obj.dictado.curso
 
 # --------------------------------------------------------------------------------------
 

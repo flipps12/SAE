@@ -1,0 +1,84 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h2 class="mb-4 text-white">Listado de Personal y Cargos Activos</h2>
+
+    <form method="GET" action="" class="row g-3 mb-4 p-3 card flex-row flex-wrap align-items-end">
+        <div class="col-md-11">
+            <label for="q" class="form-label fw-bold">Buscador General</label>
+            <input type="text" name="q" id="q" class="form-control" placeholder="Buscar por Nombre, Apellido, CUIL o Legajo..." value="{{ search_query|default:'' }}">
+        </div>
+
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </form>
+
+    <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>CUIL</th>
+                    <th>Apellido y Nombre</th>
+                    <th>Legajo</th>
+                    <th>Cargos Asignados (Activos)</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for perfil in personal_con_cargos %}
+                <tr>
+                    <td class="fw-bold">
+                        {{ perfil.persona.cuil|slice:":2" }}-{{ perfil.persona.cuil|slice:"2:10" }}-{{ perfil.persona.cuil|slice:"10:" }}
+                    </td>
+                    
+                    <td>{{ perfil.persona.apellido }}, {{ perfil.persona.nombre }}</td>
+                    
+                    <td>{{ perfil.persona.numero_legajo }}</td>
+                    
+                    <td>
+                        <ul class="mb-0 ps-3">
+                        {% for asignacion in perfil.asignaciones.all %}
+                            {% if asignacion.activo %}
+                                <li>
+                                    <strong>{{ asignacion.cargo.nombre }}</strong> 
+                                    {% if asignacion.resolucion %}
+                                        <span class="text-muted">(Res: {{ asignacion.resolucion }})</span>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                        {% empty %}
+                            <li class="text-danger list-unstyled">Sin cargos activos vigentes</li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-link text-light p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="box-shadow: none;">
+                                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                            </button>
+                            
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-menu-item dropdown-item text-muted ps-3" href="#">
+                                        <i class="fa-solid fa-clock me-2 text-warning"></i> Próximamente...
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        No se encontró personal con cargos activos que coincidan con los criterios de búsqueda.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

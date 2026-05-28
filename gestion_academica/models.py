@@ -356,10 +356,52 @@ class Materia(models.Model):
 # --------------------------------------------------------------------------------------
 
 class Dictado(models.Model):
+    SITUACIONES_REVISTA = [
+        ('TITULAR', 'Titular'),
+        ('INTERINO', 'Interino'),
+        ('SUPLENTE', 'Suplente'),
+        ('PROVICIONAL', 'Provicional'),
+    ]
+
+    FORMAS_INGRESO = [
+        ('MAD', 'MAD'),
+        ('REUBICADO', 'Reubicado'),
+        ('ACTO_PUBLICO', 'Acto Público'),
+        ('ACTO_PUBLICO_DIGITAL', 'Acto Público Digital'),
+        ('DESTINO_DEFINITIVO', 'Destino Definitivo'),
+        ('PROPUESTA_NOMBRAMIENTO', 'Propuesta Nombramiento'),
+        ('PROYECTO_ELECCION', 'Proyecto y Elección'),
+        ('DISPOSICION', 'Disposición'),
+        ('OTROS', 'Otros'),
+    ]
+
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name='dictados')
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='dictados')
     profesor = models.ForeignKey(Profesor, on_delete=models.PROTECT, null=True, blank=True, related_name='dictados')
     ciclo_lectivo = models.ForeignKey(CicloLectivo, on_delete=models.CASCADE, related_name='dictados')
+
+    # --- CAMPOS ADMINISTRATIVOS ACTUALIZADOS ---
+    pid = models.CharField(max_length=50, verbose_name="PID", null=True, blank=True)
+    cupof = models.IntegerField(verbose_name="CUPOF", null=True, blank=True)
+    secuencia = models.IntegerField(verbose_name="Secuencia", null=True, blank=True)
+    
+    toma_posesion = models.DateField(verbose_name="Toma de Posesión", null=True, blank=True)
+    
+    forma_ingreso = models.CharField(
+        max_length=30, 
+        choices=FORMAS_INGRESO, 
+        verbose_name="Forma de Ingreso", 
+        null=True, 
+        blank=True
+    )
+    
+    situacion_revista = models.CharField(
+        max_length=20, 
+        choices=SITUACIONES_REVISTA, 
+        verbose_name="Situación de Revista", 
+        null=True, 
+        blank=True
+    )
 
     class Meta:
         unique_together = ('materia', 'curso', 'ciclo_lectivo')
@@ -367,7 +409,35 @@ class Dictado(models.Model):
         verbose_name_plural = "Dictados de Materias"
 
     def __str__(self):
-        return f"{self.materia.nombre} | {self.curso} ({self.ciclo_lectivo})"
+        profe_str = f" | {self.profesor}" if self.profesor else " | Sin Profesor asignado"
+        return f"{self.materia.nombre} - {self.curso} ({self.ciclo_lectivo}){profe_str}"
+    
+# --------------------------------------------------------------------------------------
+
+class InscripcionDictado(models.Model):
+    """
+    Vincula directamente al alumno con cada materia concreta (Dictado) 
+    que debe cursar en el ciclo lectivo actual.
+    """
+    alumno = models.ForeignKey('Alumno', on_delete=models.CASCADE, related_name='inscripciones_dictados')
+    dictado = models.ForeignKey('Dictado', on_delete=models.CASCADE, related_name='alumnos_inscriptos')
+    ciclo_lectivo = models.ForeignKey('CicloLectivo', on_delete=models.CASCADE)
+    
+    CONDICION_CHOICES = [
+        ('REGULAR', 'Regular'),
+        ('RECURSANTE', 'Recursante'),
+        ('PREVIA', 'Previa'),
+    ]
+    condicion = models.CharField(max_length=15, choices=CONDICION_CHOICES, default='REGULAR')
+
+    class Meta:
+        unique_together = ('alumno', 'dictado', 'ciclo_lectivo')
+        verbose_name = "Inscripción a Dictado"
+        verbose_name_plural = "Inscripciones a Dictados"
+
+    def __str__(self):
+        return f"{self.alumno.persona.apellido} en {self.dictado.materia.nombre} ({self.get_condicion_display()})"
+    
     
 # --------------------------------------------------------------------------------------
 
@@ -471,7 +541,8 @@ class NotaActividad(models.Model):
     """
     dictado = models.ForeignKey(Dictado, on_delete=models.CASCADE, related_name='notas_actividades')
     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE, related_name='notas_actividades')
-    cuatrimestre = models.IntegerField(choices=[(1, '1º Cuatrimestre'), (2, '2º Cuatrimestre')])
+
+    cuatrimestre = models.IntegerField(choices=[(1, '1º Cuatrimestre'), (2, '2º Cuatrimestre')],db_index=True)
     nombre_actividad = models.CharField(max_length=100)
     fecha = models.DateField()
     valor = models.DecimalField(
@@ -483,6 +554,10 @@ class NotaActividad(models.Model):
     class Meta:
         verbose_name = "Nota de Actividad"
         verbose_name_plural = "Notas de Actividades"
+
+        indexes = [
+            models.Index(fields=['dictado', 'alumno'], name='idx_notaact_dictado_alumno'),
+        ]
 
     def __str__(self):
         return f"{self.alumno.persona.apellido} - {self.nombre_actividad}: {self.valor}"
@@ -539,7 +614,7 @@ class Burbuja(models.Model):
 class Asistencia(models.Model):
     class EstadoAsistencia(models.TextChoices):
         PRESENTE = 'P', 'Presente'
-        AUSENTE = 'A', 'Absente'
+        AUSENTE = 'A', 'Ausente'
         JUSTIFICADA = 'J', 'Justificada'
 
     inscripcion = models.ForeignKey(
@@ -548,7 +623,7 @@ class Asistencia(models.Model):
         related_name='asistencias'
     )
     
-    fecha = models.DateField()
+    fecha = models.DateField(db_index=True)
     turno = models.ForeignKey('Turno', on_delete=models.CASCADE)
     
     estado = models.CharField(
@@ -577,6 +652,10 @@ class Asistencia(models.Model):
         unique_together = ('inscripcion', 'fecha', 'turno')
         verbose_name = "Asistencia"
         verbose_name_plural = "Asistencias"
+
+        indexes = [
+            models.Index(fields=['inscripcion', 'fecha'], name='idx_asistencia_insc_fecha'),
+        ]
 
     def __str__(self):
         return f"{self.inscripcion.alumno.persona.apellido} - {self.fecha} ({self.get_estado_display()})"

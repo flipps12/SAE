@@ -1,0 +1,131 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Encabezado y Botón Volver -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white mb-0">Historial Académico de Calificaciones</h2>
+        <a href="javascript:history.back()" class="btn btn-outline-light btn-sm">
+            <i class="fa-solid fa-arrow-left me-2"></i> Volver
+        </a>
+    </div>
+
+    <!-- Ficha del Alumno -->
+    <div class="card bg-dark text-white p-4 mb-4 border-0 shadow-sm">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <h4 class="text-info mb-1">{{ alumno.persona.apellido }}, {{ alumno.persona.nombre }}</h4>
+                <p class="mb-0 text-muted" style="font-size: 0.9rem;">
+                    CUIL: {{ alumno.persona.cuil|slice:":2" }}-{{ alumno.persona.cuil|slice:"2:10" }}-{{ alumno.persona.cuil|slice:"10:" }}
+                </p>
+            </div>
+            <div class="col-md-3">
+                <div class="small text-muted">Legajo</div>
+                <div class="fw-bold">{{ alumno.persona.numero_legajo }}</div>
+            </div>
+            <div class="col-md-3">
+                <div class="small text-muted">Estado Institucional</div>
+                <div>
+                    {% if alumno.activo %}
+                        <span class="badge bg-success">Regular / Activo</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactivo / Pase</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-2 text-md-end mt-3 mt-md-0">
+                <!-- Botón de acciones directas para este alumno -->
+                <button class="btn btn-primary btn-sm w-100">
+                    <i class="fa-solid fa-file-pdf me-2"></i> Imprimir Analítico
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloques de Cursadas por Año -->
+    {% for anio, datos in historial_agrupado.items %}
+        <div class="mb-5">
+            <div class="d-flex align-items-center mb-3">
+                <h3 class="text-warning mb-0 me-3">Ciclo Lectivo {{ anio }}</h3>
+                <span class="badge bg-secondary fs-6">{{ datos.curso }}</span>
+            </div>
+
+            <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Materia</th>
+                            <th class="text-center" style="width: 35%;">Notas de Proceso (Actividades)</th>
+                            <th class="text-center" style="width: 25%;">Notas de Cierre (Etapas)</th>
+                            <th class="text-center" style="width: 15%;">Intensificación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inscripcion in datos.inscripciones %}
+                        <tr>
+                            <!-- Nombre de la Materia -->
+                            <td class="fw-bold text-light">
+                                {{ inscripcion.dictado.materia.nombre }}
+                                <div class="text-muted small fw-normal">{{ inscripcion.get_condicion_display }}</div>
+                            </td>
+
+                            <!-- Notas de Actividades del Alumno -->
+                            <td class="text-center">
+                                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                    {% for nota in inscripcion.dictado.notas_actividades.all %}
+                                        {% if nota.alumno_id == alumno.id %}
+                                            <span class="badge bg-secondary p-2" title="{{ nota.nombre_actividad }} (C{{ nota.cuatrimestre }} - {{ nota.fecha|date:'d/m' }})">
+                                                {{ nota.valor }}
+                                            </span>
+                                        {% endif %}
+                                    {{ commissions }}
+                                        <span class="text-muted small">-</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+
+                            <!-- Notas de Etapa (Cierres trimestrales/cuatrimestrales) -->
+                            <td class="text-center">
+                                <div class="text-start d-inline-block" style="font-size: 0.85rem;">
+                                    {% for nota_etapa in inscripcion.dictado.notas_etapas.all %}
+                                        {% if nota_etapa.alumno_id == alumno.id %}
+                                            <div>
+                                                <span class="text-info fw-bold">{{ nota_etapa.get_etapa_display }}:</span> 
+                                                <span class="fw-bold">{{ nota_etapa.valor_numerico }}</span>
+                                                {% if nota_etapa.valor_conceptual %}
+                                                    <span class="text-warning small">({{ nota_etapa.valor_conceptual }})</span>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    {% empty %}
+                                        <span class="text-muted small">Sin cierres</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+
+                            <!-- Notas de Intensificación (Diciembre/Febrero) -->
+                            <td class="text-center">
+                                {% for inte in inscripcion.dictado.intensificaciones.all %}
+                                    {% if inte.alumno_id == alumno.id %}
+                                        <span class="badge bg-danger p-2" title="Fecha: {{ inte.fecha|date:'d/m/Y' }}">
+                                            {{ inte.valor }}
+                                        </span>
+                                    {% endif %}
+                                {% empty %}
+                                    <span class="text-muted small">-</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-dark text-center py-4 border-0" role="alert">
+            <i class="fa-solid fa-folder-open fs-3 text-muted mb-2 d-block"></i>
+            Este alumno no registra inscripciones a materias en el historial del sistema.
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

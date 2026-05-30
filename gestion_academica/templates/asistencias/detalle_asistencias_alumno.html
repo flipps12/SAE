@@ -1,0 +1,136 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white mb-0">Historial Detallado de Asistencias</h2>
+        <a href="javascript:history.back()" class="btn btn-outline-light btn-sm">
+            <i class="fa-solid fa-arrow-left me-2"></i> Volver
+        </a>
+    </div>
+
+    <div class="card bg-dark text-white p-4 mb-4 border-0 shadow-sm">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <h4 class="text-info mb-1">{{ alumno.persona.apellido }}, {{ alumno.persona.nombre }}</h4>
+                <p class="mb-0 text-muted" style="font-size: 0.9rem;">
+                    DNI: {{ alumno.persona.dni }} | CUIL: {{ alumno.persona.cuil|slice:":2" }}-{{ alumno.persona.cuil|slice:"2:10" }}-{{ alumno.persona.cuil|slice:"10:" }}
+                </p>
+            </div>
+            <div class="col-md-3">
+                <div class="small text-muted">Legajo Institucional</div>
+                <div class="fw-bold">{{ alumno.persona.numero_legajo }}</div>
+            </div>
+            <div class="col-md-3">
+                <div class="small text-muted">Condición actual</div>
+                <div>
+                    {% if alumno.activo %}
+                        <span class="badge bg-success">Regular</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactivo / Pase</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-2 text-md-end mt-3 mt-md-0">
+                <button class="btn btn-danger btn-sm w-100" onclick="window.print()">
+                    <i class="fa-solid fa-print me-2"></i> Imprimir Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% for anio, datos in historial_asistencias_agrupado.items %}
+        <div class="mb-5">
+            <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 geo-border-bottom pb-2">
+                <div class="d-flex align-items-center">
+                    <h3 class="text-warning mb-0 me-3">Año Escolar {{ anio }}</h3>
+                    <span class="badge bg-secondary fs-6 me-2">{{ datos.curso }}</span>
+                    {% if datos.burbuja %}
+                        <span class="badge bg-dark border border-secondary text-muted small">Burbuja: {{ datos.burbuja.nombre }}</span>
+                    {% endif %}
+                </div>
+                <div class="text-muted small mt-2 mt-md-0">
+                    Estado al cierre: <span class="text-light fw-bold">{{ datos.estado_final }}</span>
+                    {% if datos.grupo_taller %} | Taller: <span class="text-light fw-bold">{{ datos.grupo_taller }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-dark text-center border-0 p-3 shadow-sm">
+                        <div class="text-success small fw-bold text-uppercase">Días Presente</div>
+                        <div class="display-6 fw-bold text-success">{{ datos.totales.presentes }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-dark text-center border-0 p-3 shadow-sm">
+                        <div class="text-warning small fw-bold text-uppercase">Ausencias Justificadas</div>
+                        <div class="display-6 fw-bold text-warning">{{ datos.totales.justificadas }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-dark text-center border-0 p-3 shadow-sm">
+                        <div class="text-danger small fw-bold text-uppercase">Faltas Acumuladas (Penalizadas)</div>
+                        <div class="display-6 fw-bold text-danger">{{ datos.totales.faltas }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Fecha del Registro</th>
+                            <th style="width: 25%;">Turno / Bloque Horario</th>
+                            <th class="text-center" style="width: 25%;">Estado de Asistencia</th>
+                            <th class="text-center" style="width: 25%;">Impacto en Faltas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in datos.registros %}
+                        <tr>
+                            <td class="text-light fw-semibold">
+                                <i class="fa-regular fa-calendar me-2 text-muted"></i>{{ registro.fecha|date:"l, d \d\e F \d\e Y" }}
+                            </td>
+                            
+                            <td>
+                                <span class="badge bg-dark text-wrap">{{ registro.turno.nombre }}</span>
+                            </td>
+                            
+                            <td class="text-center">
+                                {% if registro.estado == 'P' %}
+                                    <span class="badge bg-success-subtle text-success px-3 py-2 fw-bold text-uppercase">Presente</span>
+                                {% elif registro.estado == 'J' %}
+                                    <span class="badge bg-warning-subtle text-warning px-3 py-2 fw-bold text-uppercase">Justificada</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger px-3 py-2 fw-bold text-uppercase">Ausente</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td class="text-center fw-bold">
+                                {% if registro.estado == 'A' %}
+                                    <span class="text-danger">+{{ registro.turno.valor_falta }}</span>
+                                {% else %}
+                                    <span class="text-muted">0.0</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted small">
+                                No se registran novedades de asistencia diarias cargadas en este ciclo lectivo.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-dark text-center py-4 border-0" role="alert">
+            <i class="fa-solid fa-calendar-xmark fs-3 text-muted mb-2 d-block"></i>
+            El alumno seleccionado no posee historiales académicos activos ni registros de asistencia cargados en el sistema.
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

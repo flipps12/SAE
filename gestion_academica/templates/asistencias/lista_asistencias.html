@@ -9,7 +9,7 @@
             <label for="ciclo" class="form-label fw-bold">Ciclo Lectivo</label>
             <select name="ciclo" id="ciclo" class="form-select" onchange="this.form.submit()">
                 {% for c in ciclos %}
-                    <option value="{{ c.id }}" {% if c.id == selected_ciclo %}selected{% endif %}>{{ c.anio }}</option>
+                <option value="{{ c.id }}" {% if c.id == selected_ciclo %}selected{% endif %}>{{ c.anio }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -19,7 +19,7 @@
             <select name="curso" id="curso" class="form-select" onchange="this.form.submit()">
                 <option value="">-- Todos los Cursos --</option>
                 {% for cur in cursos %}
-                    <option value="{{ cur.id }}" {% if cur.id == selected_curso %}selected{% endif %}>{{ cur }}</option>
+                <option value="{{ cur.id }}" {% if cur.id == selected_curso %}selected{% endif %}>{{ cur }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -56,8 +56,7 @@
                     </td>
 
                     <td>
-                        <a href="{% url 'detalle_asistencias_alumno' inscripcion.alumno.id %}"
-                            class="text-decoration-none">
+                        <a href="{% url 'detalle_asistencias_alumno' inscripcion.alumno.id %}" class="text-decoration-none">
                             {{ inscripcion.alumno.persona.apellido }}, {{ inscripcion.alumno.persona.nombre }}
                         </a>
                         <div class="text-muted" style="font-size: 0.75rem;">
@@ -67,10 +66,10 @@
                     </td>
 
                     <td>
-                        <span class="badge bg-dark">{{ inscripcion.curso.nivel }}° {{ inscripcion.curso.division
-                            }}ª</span>
-                        <div class="text-muted small mt-1" style="font-size: 0.80rem;">{{
-                            inscripcion.curso.especialidad.nombre }}</div>
+                        <span class="badge bg-dark">{{ inscripcion.curso.nivel }}° {{ inscripcion.curso.division }}ª</span>
+                        {% if inscripcion.curso.especialidad %}
+                        <div class="text-muted small mt-1" style="font-size: 0.80rem;">{{ inscripcion.curso.especialidad.nombre }}</div>
+                        {% endif %}
                     </td>
 
                     <td class="text-center fw-bold text-success fs-5">
@@ -97,16 +96,14 @@
 
                     <td class="text-center">
                         <div class="dropdown">
-                            <button class="btn btn-link text-light p-0 border-0" type="button" data-bs-toggle="dropdown"
-                                aria-expanded="false" style="box-shadow: none;">
+                            <button class="btn btn-link text-light p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="box-shadow: none;">
                                 <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
                             </button>
 
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
                                 <li>
                                     <a class="dropdown-item" href="#">
-                                        <i class="fa-solid fa-calendar-check me-2 text-success"></i> Tomar Asistencia
-                                        Hoy
+                                        <i class="fa-solid fa-calendar-check me-2 text-success"></i> Tomar Asistencia Hoy
                                     </a>
                                 </li>
                                 <li>
@@ -119,8 +116,7 @@
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="#">
-                                        <i class="fa-solid fa-file-signature me-2 text-warning"></i> Cargar
-                                        Justificativo
+                                        <i class="fa-solid fa-file-signature me-2 text-warning"></i> Cargar Justificativo
                                     </a>
                                 </li>
                             </ul>

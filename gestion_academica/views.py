@@ -1,14 +1,19 @@
-from django.views.generic import ListView, FormView, UpdateView, DetailView
-from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, FormView, UpdateView, DetailView, TemplateView
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import Q, Prefetch, Count, Sum, Case, When, DecimalField
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.db import transaction, models
 from openpyxl import load_workbook
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+
 from .models import Persona, Alumno, Curso, CicloLectivo, HistorialAcademico, Especialidad, InscripcionDictado, Dictado, Profesor, PersonalCargo, Asistencia
-from .forms import AlumnoForm, PersonaForm, ImportarAlumnosForm
+from .forms import AlumnoForm, PersonaForm, ImportarAlumnosForm, AlumnoFormSet
+
+
+import random
 
 User = get_user_model()
 
@@ -668,3 +673,137 @@ class DetalleAsistenciasAlumnoView(DetailView):
             
         context['historial_asistencias_agrupado'] = historial_agrupado
         return context       
+
+# --------------------------------------------------------------------------------------
+# ---                       CargaFormsetAlumnosView                                  ---
+# --------------------------------------------------------------------------------------
+
+class CargaFormsetAlumnosView(TemplateView):
+    template_name = 'alumnos/carga_dinamica_alumnos.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ciclos'] = CicloLectivo.objects.filter(activo=True)
+        context['cursos'] = Curso.objects.all()
+        context['formset'] = AlumnoFormSet(prefix='alumnos')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        ciclo_id = request.POST.get('ciclo_lectivo')
+        curso_id = request.POST.get('curso')
+        
+        if not ciclo_id or not curso_id:
+            messages.error(request, "Falta seleccionar el Ciclo Lectivo o el Curso de destino.")
+            return self.render_to_response(self.get_context_data())
+
+        ciclo = CicloLectivo.objects.get(id=ciclo_id)
+        curso_destino = Curso.objects.get(id=curso_id)
+        formset = AlumnoFormSet(request.POST, prefix='alumnos')
+
+        if formset.is_valid():
+            # Traer los dictados asignados a este curso y ciclo
+            dictados_curso = Dictado.objects.filter(curso=curso_destino, ciclo_lectivo=ciclo)
+            
+            if not dictados_curso.exists():
+                messages.error(request, f"El curso {curso_destino} no posee materias (Dictados) asociadas en este ciclo lectivo.")
+                return self.render_to_response(self.get_context_data())
+
+            creados = 0
+            errores = []
+
+            try:
+                with transaction.atomic():
+                    for form in formset:
+                        if not form.cleaned_data or not form.cleaned_data.get('dni'):
+                            continue
+
+                        dni = form.cleaned_data['dni'].strip()
+                        apellido = form.cleaned_data['apellido'].strip()
+                        nombre = form.cleaned_data['nombre'].strip()
+                        
+                        legajo_in = form.cleaned_data.get('numero_legajo')
+                        libro_in = form.cleaned_data.get('libro')
+                        folio_in = form.cleaned_data.get('folio')
+
+                        # Validaciones preventivas de Unicidad
+                        if Persona.objects.filter(dni=dni).exists():
+                            errores.append(f"El DNI {dni} ya está registrado en el sistema.")
+                            continue
+
+                        # Manejo de campos requeridos por el esquema de Persona
+                        legajo_final = legajo_in.strip() if legajo_in else f"LEG-{dni}-{random.randint(10,99)}"
+                        if Persona.objects.filter(numero_legajo=legajo_final).exists():
+                            legajo_final = f"LEG-{dni}-{random.randint(100,999)}"
+
+                        # Fallbacks para cumplir constraints NOT NULL de la tabla gestion_academica_persona
+                        cuil_dummy = f"20{dni}7" 
+                        email_dummy = f"alu.{dni}@institucion.edu.ar"
+                        
+                        # 1. Crear el Usuario base
+                        username = f"alu_{dni}"
+                        user = User.objects.create_user(
+                            username=username,
+                            password=dni, # Contraseña por defecto = DNI
+                            first_name=nombre[:30],
+                            last_name=apellido[:30]
+                        )
+
+                        # 2. Insertar en gestion_academica_persona
+                        persona = Persona.objects.create(
+                            user=user,
+                            dni=dni,
+                            cuil=cuil_dummy,
+                            apellido=apellido,
+                            nombre=nombre,
+                            numero_legajo=legajo_final,
+                            email=email_dummy,
+                            telefono="S/D",
+                            domicilio="S/D"
+                        )
+
+                        # Fallbacks obligatorios para cumplimiento NOT NULL de gestion_academica_alumno
+                        libro_final = libro_in.strip() if libro_in else "S/D"
+                        folio_final = folio_in.strip() if folio_in else "S/D"
+
+                        # 3. Insertar en gestion_academica_alumno
+                        alumno = Alumno.objects.create(
+                            persona=persona,
+                            libro=libro_final,
+                            folio=folio_final,
+                            activo=True
+                        )
+
+                        # 4. Insertar en gestion_academica_historialacademico
+                        HistorialAcademico.objects.create(
+                            alumno=alumno,
+                            curso=curso_destino,
+                            ciclo_lectivo=ciclo,
+                            estado_final='CURSANDO'
+                        )
+
+                        # 5. Insertar matriculaciones en gestion_academica_inscripciondictado
+                        for dictado in dictados_curso:
+                            InscripcionDictado.objects.create(
+                                alumno=alumno,
+                                dictado=dictado,
+                                ciclo_lectivo=ciclo,
+                                condicion='REGULAR'
+                            )
+                        
+                        creados += 1
+
+            except Exception as e:
+                messages.error(request, f"Error de integridad en base de datos: {str(e)}")
+                return self.render_to_response(self.get_context_data())
+
+            if creados > 0:
+                messages.success(request, f"Se cargaron {creados} alumnos con éxito en {curso_destino} y se les generó la inscripción automática a {dictados_curso.count()} materias.")
+            if errores:
+                for err in errores:
+                    messages.warning(request, err)
+
+            return redirect('/carga/alumnos/') # Poné acá el nombre de la URL o path correspondiente de tu app
+        
+        else:
+            messages.error(request, "Error de validación en los campos del listado.")
+            return self.render_to_response(self.get_context_data())

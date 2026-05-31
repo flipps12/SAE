@@ -100,3 +100,38 @@ class AlumnoForm(forms.ModelForm):
                     self.fields['burbuja'].initial = historial.burbuja
                     self.fields['grupo_taller'].initial = historial.grupo_taller
 
+
+# --------------------------------------------------------------------------------------
+# ---                              AlumnoFilaForm                                    ---
+# --------------------------------------------------------------------------------------
+
+class AlumnoFilaForm(forms.Form):
+    dni = forms.CharField(
+        max_length=8,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'DNI (8 dígitos)'})
+    )
+    apellido = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Apellido'})
+    )
+    nombre = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Nombres'})
+    )
+    numero_legajo = forms.CharField(
+        max_length=30,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Legajo (Op.)'})
+    )
+    libro = forms.CharField(
+        max_length=30,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Libro (Op.)'})
+    )
+    folio = forms.CharField(
+        max_length=30,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Folio (Op.)'})
+    )
+
+AlumnoFormSet = forms.formset_factory(AlumnoFilaForm, extra=1, min_num=1)

@@ -1,15 +1,41 @@
 from django.views import View
+from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils import timezone
+from .models import User
 
-class HomeView(View):
-    def get(self, request):
-        return render(request, 'usuarios/home.html')
-    
+from gestion_academica.models import Alumno, Profesor, Preceptor, Curso, Asistencia
+
+class HomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'usuarios/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Conteo de Alumnos Activos
+        context['total_alumnos'] = Alumno.objects.filter(activo=True).count()
+        
+        # Conteo de Profesores y Preceptores (desde gestion_academica)
+        context['total_profesores'] = Profesor.objects.count()
+        context['total_preceptores'] = Preceptor.objects.count()
+        
+        # Total de Divisiones / Cursos creados
+        context['total_cursos'] = Curso.objects.count()
+        
+        # Métrica diaria: asistencias tomadas hoy (30/05/2026)
+        hoy = timezone.now().date()
+        context['asistencias_hoy'] = Asistencia.objects.filter(fecha=hoy).count()
+        
+        # Extra: Podés contar cuántos usuarios de cada tipo hay en auth si querés cruzar datos
+        # context['total_usuarios_alumnos'] = User.objects.filter(user_type=User.TipoUsuario.ALUMNO).count()
+        
+        return context
+   
 class PerfilView(LoginRequiredMixin, View):
     def get(self, request):
         password_form = PasswordChangeForm(request.user)
@@ -36,3 +62,4 @@ class PerfilView(LoginRequiredMixin, View):
                 return redirect('perfil')
         
         return redirect('perfil')
+    

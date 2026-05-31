@@ -6,14 +6,97 @@
 {% endblock %}
 
 {% block content %}
-    <div class="center-text">
-        <div class="d-flex flex-column align-items-center">
-            <div class="animated-text" style="font-size: 6rem; line-height: 1;">SAE PBA</div>
-            <div class="text-muted text-uppercase mt-2" style="letter-spacing: 4px; font-weight: 500; font-size: 1.2rem; color: #4a9eff !important;">
-                Sistema de Administración Escolar PBA
-            </div>
+<div class="container mt-4">
+    
+    <div class="text-center my-5">
+        <div class="animated-text" style="font-size: 4.5rem; line-height: 1;">SAE PBA</div>
+        <div class="text-muted text-uppercase mt-2" style="letter-spacing: 4px; font-weight: 500; font-size: 1rem; color: #4a9eff !important;">
+            Sistema de Administración Escolar PBA
         </div>
     </div>
+
+    <div class="row g-4 mt-2">
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-dark text-white border-0 shadow-sm h-100" style="border-left: 4px solid #198754 !important;">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <div class="text-muted text-uppercase small fw-bold mb-1" style="letter-spacing: 1px;">Alumnos Activos</div>
+                        <h2 class="display-6 fw-bold mb-0">{{ total_alumnos }}</h2>
+                    </div>
+                    <div class="bg-success bg-opacity-10 text-success rounded p-3">
+                        <i class="fa-solid fa-graduation-cap fa-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-dark text-white border-0 shadow-sm h-100" style="border-left: 4px solid #0dcaf0 !important;">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <div class="text-muted text-uppercase small fw-bold mb-1" style="letter-spacing: 1px;">Cuerpo Docente</div>
+                        <h2 class="display-6 fw-bold mb-0">{{ total_profesores }}</h2>
+                    </div>
+                    <div class="bg-info bg-opacity-10 text-info rounded p-3">
+                        <i class="fa-solid fa-chalkboard-user fa-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-dark text-white border-0 shadow-sm h-100" style="border-left: 4px solid #ffc107 !important;">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <div class="text-muted text-uppercase small fw-bold mb-1" style="letter-spacing: 1px;">Preceptores</div>
+                        <h2 class="display-6 fw-bold mb-0">{{ total_preceptores }}</h2>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 text-warning rounded p-3">
+                        <i class="fa-solid fa-user-shield fa-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-dark text-white border-0 shadow-sm h-100" style="border-left: 4px solid #fd7e14 !important;">
+                <div class="card-body d-flex flex-column justify-content-center p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted text-uppercase small fw-bold" style="letter-spacing: 1px;">Divisiones / Cursos</span>
+                        <span class="badge bg-orange text-white fw-bold">{{ total_cursos }}</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between border-top border-secondary pt-2">
+                        <span class="text-muted small">Asistencias Hoy:</span>
+                        <span class="fw-bold text-warning">
+                            {% if asistencias_hoy > 0 %}
+                                <i class="fa-solid fa-circle-check text-success me-1"></i>{{ asistencias_hoy }}
+                            {% else %}
+                                <i class="fa-solid fa-clock text-muted me-1"></i>0
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- <div class="row mt-5">
+        <div class="col-12">
+            <h5 class="text-secondary text-uppercase small mb-3" style="letter-spacing: 2px;">Operaciones Frecuentes</h5>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/carga/alumnos/" class="btn btn-outline-success btn-sm px-3">
+                    <i class="fa-solid fa-user-plus me-2"></i>Nueva Matrícula Masiva
+                </a>
+                <a href="#" class="btn btn-outline-info btn-sm px-3">
+                    <i class="fa-solid fa-clipboard-user me-2"></i>Tomar Asistencia
+                </a>
+            </div>
+        </div>
+    </div> -->
+
+</div>
 {% endblock %}
 
 {% block extra_js %}

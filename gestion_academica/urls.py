@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CargaFormsetAlumnosView, DetalleAsistenciasAlumnoView, ListaAsistenciasView, DetalleCalificacionesAlumnoView, ListadoAlumnosView, ListaCalificacionesView, ImportarAlumnosView, EditarAlumnoView, ProfesorListView, ListaCargosView
+from .views import CargaFormsetAlumnosView, DetalleAsistenciasAlumnoView, ListaAsistenciasView, DetalleCalificacionesAlumnoView, ListadoAlumnosView, ListaCalificacionesView, ImportarAlumnosView, EditarAlumnoView, ProfesorListView, ListaCargosView, CargaFormsetProfesoresView
 
 urlpatterns = [
     path('alumnos/', ListadoAlumnosView.as_view(), name='listado_alumnos'),
@@ -14,4 +14,5 @@ urlpatterns = [
 
     
     path('carga/alumnos/', CargaFormsetAlumnosView.as_view(), name='carga_dinamica_alumnos'),
+    path('profesores/carga/', CargaFormsetProfesoresView.as_view(), name='carga_dinamica_profesores'),
 ]

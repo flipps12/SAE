@@ -1,4 +1,4 @@
-from django.views.generic import ListView, FormView, UpdateView, DetailView, TemplateView
+from django.views.generic import ListView, FormView, UpdateView, DetailView, TemplateView, View
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -8,9 +8,10 @@ from django.contrib.auth.models import User
 from django.db import transaction, models
 from openpyxl import load_workbook
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.views import View
 
 from .models import Persona, Alumno, Curso, CicloLectivo, HistorialAcademico, Especialidad, InscripcionDictado, Dictado, Profesor, PersonalCargo, Asistencia
-from .forms import AlumnoForm, PersonaForm, ImportarAlumnosForm, AlumnoFormSet
+from .forms import AlumnoForm, PersonaForm, ImportarAlumnosForm, AlumnoFormSet, ProfesorFormSet
 
 
 import random
@@ -807,3 +808,59 @@ class CargaFormsetAlumnosView(TemplateView):
         else:
             messages.error(request, "Error de validación en los campos del listado.")
             return self.render_to_response(self.get_context_data())
+# --------------------------------------------------------------------------------------
+# ---                       CargaFormsetProfesoresView                               ---
+# --------------------------------------------------------------------------------------
+
+class CargaFormsetProfesoresView(View):
+        
+    template_name = 'profesores/carga_profesores.html'
+
+    def get(self, request):
+
+        formset = ProfesorFormSet()
+
+        return render(
+            request,
+            self.template_name,
+            {'formset': formset}
+        )
+
+    def post(self, request):
+
+        formset = ProfesorFormSet(request.POST)
+
+        if formset.is_valid():
+
+            for form in formset:
+
+                if not form.cleaned_data:
+                    continue
+
+                persona = Persona.objects.create(
+                    nombre=form.cleaned_data['nombre'],
+                    apellido=form.cleaned_data['apellido'],
+                    dni=form.cleaned_data['dni'],
+                    cuil=form.cleaned_data['cuil'],
+                    numero_legajo=form.cleaned_data['numero_legajo'],
+                    email=form.cleaned_data['email'],
+                    telefono=form.cleaned_data['telefono']
+                )
+
+                Profesor.objects.create(
+                    persona=persona,
+                    telefono_emergencia=form.cleaned_data['telefono_emergencia']
+                )
+
+            messages.success(
+                request,
+                "Profesores cargados correctamente."
+            )
+
+            return redirect('listado_profesor')
+
+        return render(
+            request,
+            self.template_name,
+            {'formset': formset}
+        )

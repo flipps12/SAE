@@ -135,3 +135,82 @@ class AlumnoFilaForm(forms.Form):
     )
 
 AlumnoFormSet = forms.formset_factory(AlumnoFilaForm, extra=1, min_num=1)
+
+
+# --------------------------------------------------------------------------------------
+# ---                              ProfesorFilaForm                                  ---
+# --------------------------------------------------------------------------------------
+
+class ProfesorFilaForm(forms.Form):
+
+    dni = forms.CharField(
+        max_length=8,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'DNI'
+        })
+    )
+
+    cuil = forms.CharField(
+        max_length=11,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'CUIL'
+        })
+    )
+
+    apellido = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Apellido'
+        })
+    )
+
+    nombre = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nombre'
+        })
+    )
+
+    numero_legajo = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Legajo'
+        })
+    )
+
+    email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Email'
+        })
+    )
+
+    telefono = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Teléfono'
+        })
+    )
+
+    telefono_emergencia = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Teléfono emergencia'
+        })
+    )
+
+ProfesorFormSet = forms.formset_factory(
+    ProfesorFilaForm,
+    extra=1,
+    min_num=1
+    
+    ) 
+   

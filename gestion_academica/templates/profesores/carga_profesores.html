@@ -1,0 +1,59 @@
+{% extends 'usuarios/base.html' %}
+
+{% block content %}
+
+<h2>Carga rápida de docentes</h2>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    {{ formset.management_form }}
+
+    <table class="table table-striped">
+
+        <thead>
+
+            <tr>
+                <th>DNI</th>
+                <th>CUIL</th>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Legajo</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Emergencia</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for form in formset %}
+
+                <tr>
+
+                    <td>{{ form.dni }}</td>
+                    <td>{{ form.cuil }}</td>
+                    <td>{{ form.apellido }}</td>
+                    <td>{{ form.nombre }}</td>
+                    <td>{{ form.numero_legajo }}</td>
+                    <td>{{ form.email }}</td>
+                    <td>{{ form.telefono }}</td>
+                    <td>{{ form.telefono_emergencia }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <button type="submit" class="btn btn-success">
+        Guardar docentes
+    </button>
+
+</form>
+
+{% endblock %}

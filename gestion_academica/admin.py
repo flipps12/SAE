@@ -5,7 +5,7 @@ from .models import (
     Preceptor, Alumno, Materia, Curso, Dictado, Asistencia,
     NotaEtapa, PersonalNoDocente, TipoCargo, PersonalCargo, HistorialAcademico,
     AsignacionPreceptor, Burbuja, NotaActividad, Intensificacion, HorarioDictado,
-    Persona, AsignacionCargo, InscripcionDictado
+    Persona, AsignacionCargo, InscripcionDictado, Comunicado
 )
 
 # --------------------------------------------------------------------------------------
@@ -312,6 +312,26 @@ class InscripcionDictadoAdmin(admin.ModelAdmin):
         return obj.dictado.curso
 
 # --------------------------------------------------------------------------------------
+
+@admin.register(Comunicado)
+class ComunicadoAdmin(admin.ModelAdmin):
+    # Columnas que se van a ver en el listado general del admin
+    list_display = ('titulo', 'visibilidad', 'autor', 'fecha_creacion')
+    
+    # Filtros laterales rápidos
+    list_filter = ('visibilidad', 'fecha_creacion', 'autor')
+    
+    # Buscador por título y contenido
+    search_fields = ('titulo', 'contenido')
+    
+    # Excluimos el campo autor del formulario visible para que no sea editable manualmente
+    exclude = ('autor',)
+
+    def save_model(self, request, obj, form, change):
+        # Si el comunicado es nuevo (no se está editando), le asignamos el usuario actual del admin
+        if not change:
+            obj.autor = request.user
+        super().save_model(request, obj, form, change)
 
 admin.site.register(Turno)
 admin.site.register(Especialidad)

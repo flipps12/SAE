@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico
+from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico, Comunicado
 
 # --------------------------------------------------------------------------------------
 # ---                           Form ImportarAlumnos                                 ---
@@ -135,3 +135,22 @@ class AlumnoFilaForm(forms.Form):
     )
 
 AlumnoFormSet = forms.formset_factory(AlumnoFilaForm, extra=1, min_num=1)
+
+class ComunicadoForm(forms.ModelForm):
+    class Meta:
+        model = Comunicado
+        fields = ['titulo', 'contenido', 'visibilidad']
+        widgets = {
+            'titulo': forms.TextInput(attrs={
+                'class': 'form-control bg-dark text-white border-secondary',
+                'placeholder': 'Escribí un título claro e institucional...'
+            }),
+            'contenido': forms.Textarea(attrs={
+                'class': 'form-control bg-dark text-white border-secondary',
+                'rows': 5,
+                'placeholder': 'Desarrollá el cuerpo del comunicado aquí...'
+            }),
+            'visibilidad': forms.Select(attrs={
+                'class': 'form-select bg-dark text-white border-secondary'
+            }),
+        }

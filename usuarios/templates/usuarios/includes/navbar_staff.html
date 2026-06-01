@@ -17,7 +17,7 @@
     </li>
 
      <li class="nav-item">
-        <a class="nav-link" href="#">!Comunicados</a>
+        <a class="nav-link" href="{% url 'lista_comunicados' %}">Comunicados</a>
     </li>
 
     <li class="nav-item">
@@ -34,6 +34,7 @@
             <li><a class="dropdown-item" href="{% url 'carga_dinamica_alumnos' %}">Alumnos</a></li>
             <li><a class="dropdown-item" href="#">!Docentes</a></li>
             <li><a class="dropdown-item" href="#">!Cargos</a></li>
+            <li><a class="dropdown-item" href="{% url 'carga_comunicados' %}">Comunicados</a></li>
             <li><a class="dropdown-item" href="#">!Especialidades</a></li>
             <li><a class="dropdown-item" href="#">!Cursos</a></li>
             <li><a class="dropdown-item" href="#">!Grupos</a></li>

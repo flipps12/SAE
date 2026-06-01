@@ -1,6 +1,6 @@
-from django.views.generic import ListView, FormView, UpdateView, DetailView, TemplateView
+from django.views.generic import ListView, FormView, UpdateView, DetailView, TemplateView, CreateView
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.db.models import Q, Prefetch, Count, Sum, Case, When, DecimalField
 from django.contrib.auth import get_user_model
@@ -9,8 +9,8 @@ from django.db import transaction, models
 from openpyxl import load_workbook
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 
-from .models import Persona, Alumno, Curso, CicloLectivo, HistorialAcademico, Especialidad, InscripcionDictado, Dictado, Profesor, PersonalCargo, Asistencia
-from .forms import AlumnoForm, PersonaForm, ImportarAlumnosForm, AlumnoFormSet
+from .models import Comunicado, Persona, Alumno, Curso, CicloLectivo, HistorialAcademico, Especialidad, InscripcionDictado, Dictado, Profesor, PersonalCargo, Asistencia
+from .forms import AlumnoForm, PersonaForm, ImportarAlumnosForm, AlumnoFormSet, ComunicadoForm
 
 
 import random
@@ -807,3 +807,43 @@ class CargaFormsetAlumnosView(TemplateView):
         else:
             messages.error(request, "Error de validación en los campos del listado.")
             return self.render_to_response(self.get_context_data())
+
+
+class TablonComunicadosView(LoginRequiredMixin, ListView):
+    model = Comunicado
+    template_name = 'comunicados/lista_comunicados.html'  # Tu template real
+    context_object_name = 'comunicados'
+    paginate_by = 10
+
+    def get_queryset(self):
+        user = self.request.user
+        filtros = Q(visibilidad=Comunicado.VisibilidadChoices.GLOBAL)
+
+        if user.user_type == 'ALUMNO':
+            filtros |= Q(visibilidad=Comunicado.VisibilidadChoices.ESTUDIANTES)
+        elif user.user_type in ['PROFESOR', 'PRECEPTOR', 'JERARQUICOS', 'CARGOS']:
+            filtros |= Q(visibilidad=Comunicado.VisibilidadChoices.DOCENTES)
+            filtros |= Q(visibilidad=Comunicado.VisibilidadChoices.ESTUDIANTES)
+
+        return Comunicado.objects.filter(filtros)
+
+
+class CrearComunicadoView(LoginRequiredMixin, CreateView):
+    model = Comunicado
+    form_class = ComunicadoForm
+    template_name = 'comunicados/carga_comunicados.html'  # Tu template real
+
+    def get_success_url(self):
+        # Redirige de forma dinámica usando reverse común una vez procesado con éxito
+        return reverse('lista_comunicados')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.user_type == 'ALUMNO':
+            messages.error(request, "No tenés permisos para publicar comunicados.")
+            return redirect('lista_comunicados')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.autor = self.request.user
+        messages.success(self.request, "Comunicado publicado de manera exitosa.")
+        return super().form_valid(form)

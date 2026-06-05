@@ -1,20 +1,29 @@
 from django.urls import path
-from .views import TablonComunicadosView, CrearComunicadoView, CargaFormsetAlumnosView, DetalleAsistenciasAlumnoView, ListaAsistenciasView, DetalleCalificacionesAlumnoView, ListadoAlumnosView, ListaCalificacionesView, ImportarAlumnosView, EditarAlumnoView, ProfesorListView, ListaCargosView
+# Importamos directamente los archivos del paquete views
+from .views import alumnos, asistencias, calificaciones, cargos, comunicados, profesores
+
+app_name = 'gestion_academica'
 
 urlpatterns = [
-    path('alumnos/', ListadoAlumnosView.as_view(), name='listado_alumnos'),
-    path('alumnos/importar_alumnos/', ImportarAlumnosView.as_view(), name='importar_alumnos'),
-    path('alumnos/editar/<int:pk>/', EditarAlumnoView.as_view(), name='editar_alumno'),
-    path('profesores/', ProfesorListView.as_view(), name='listado_profesor'),
-    path('cargos/', ListaCargosView.as_view(), name='lista_cargos'),
-    path('calificaciones/', ListaCalificacionesView.as_view(), name='lista_calificaciones'),
-    path('alumno/<int:pk>/calificaciones/', DetalleCalificacionesAlumnoView.as_view(), name='detalle_calificaciones_alumno'),
-    path('asistencias/', ListaAsistenciasView.as_view(), name='lista_asistencias'),
-    path('alumno/<int:pk>/asistencias/', DetalleAsistenciasAlumnoView.as_view(), name='detalle_asistencias_alumno'),
+    # --- DOMINIO: ALUMNOS ---
+    path('alumnos/', alumnos.ListadoAlumnosView.as_view(), name='listado_alumnos'),
+    path('alumnos/importar_alumnos/', alumnos.ImportarAlumnosView.as_view(), name='importar_alumnos'),
+    path('alumnos/editar/<int:pk>/', alumnos.EditarAlumnoView.as_view(), name='editar_alumno'),
+    path('carga/alumnos/', alumnos.CargaFormsetAlumnosView.as_view(), name='carga_dinamica_alumnos'),
 
-    
-    path('carga/alumnos/', CargaFormsetAlumnosView.as_view(), name='carga_dinamica_alumnos'),
+    # --- DOMINIO: PROFESORES Y CARGOS ---
+    path('profesores/', profesores.ProfesorListView.as_view(), name='listado_profesor'),
+    path('cargos/', cargos.ListaCargosView.as_view(), name='lista_cargos'),
 
-    path('comunicados/', TablonComunicadosView.as_view(), name='lista_comunicados'),
-    path('comunicados/nuevo/', CrearComunicadoView.as_view(), name='carga_comunicados'),
+    # --- DOMINIO: CALIFICACIONES ---
+    path('calificaciones/', calificaciones.ListaCalificacionesView.as_view(), name='lista_calificaciones'),
+    path('alumno/<int:pk>/calificaciones/', calificaciones.DetalleCalificacionesAlumnoView.as_view(), name='detalle_calificaciones_alumno'),
+
+    # --- DOMINIO: ASISTENCIAS ---
+    path('asistencias/', asistencias.ListaAsistenciasView.as_view(), name='lista_asistencias'),
+    path('alumno/<int:pk>/asistencias/', asistencias.DetalleAsistenciasAlumnoView.as_view(), name='detalle_asistencias_alumno'),
+
+    # --- DOMINIO: COMUNICADOS ---
+    path('comunicados/', comunicados.TablonComunicadosView.as_view(), name='lista_comunicados'),
+    path('comunicados/nuevo/', comunicados.CrearComunicadoView.as_view(), name='carga_comunicados'),
 ]

@@ -1,6 +1,6 @@
-from .alumnos import ListadoAlumnosView, ImportarAlumnosView, EditarAlumnoView, CargaFormsetAlumnosView
-from .asistencias import DetalleAsistenciasAlumnoView, ListaAsistenciasView
-from .comunicados import CrearComunicadoView, TablonComunicadosView
-from .calificaciones import DetalleCalificacionesAlumnoView, ListaCalificacionesView
-from .cargos import ListaCargosView
-from .profesores import ProfesorListView
+from . import alumnos
+from . import asistencias
+from . import comunicados
+from . import calificaciones
+from . import cargos
+from . import profesores

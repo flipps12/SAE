@@ -15,6 +15,7 @@ urlpatterns = [
     path('profesores/', profesores.ProfesorListView.as_view(), name='listado_profesor'),
     path('profesores/nuevo/', profesores.AltaProfesorView.as_view(), name='alta_profesor'),
     path('cargos/', cargos.ListaCargosView.as_view(), name='lista_cargos'),
+    path('cargos/nuevo/', cargos.AltaPersonalCargoView.as_view(), name='alta_cargos'),
 
     # --- DOMINIO: CALIFICACIONES ---
     path('calificaciones/', calificaciones.ListaCalificacionesView.as_view(), name='lista_calificaciones'),

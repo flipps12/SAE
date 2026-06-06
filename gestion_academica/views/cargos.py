@@ -1,21 +1,22 @@
-from django.views.generic import ListView
-# from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
-
-from gestion_academica.models import PersonalCargo
-
+# gestion_academica/views/cargos.py
+from django.views.generic import ListView, FormView
+from django.urls import reverse_lazy
+from django.db.models import Q
+from gestion_academica.models.actores import PersonalCargo
+from gestion_academica.forms import AltaPersonalCargoForm
 
 class ListaCargosView(ListView):
     model = PersonalCargo
     template_name = 'cargos/lista_cargos.html'
     context_object_name = 'personal_con_cargos'
+    ordering = ['persona__apellido', 'persona__nombre']
 
     def get_queryset(self):
-        # Base optimizada de la consulta
+        # Prefetch optimizado evitando consultas duplicadas N+1 en el bucle del template
         queryset = PersonalCargo.objects.select_related('persona').prefetch_related(
             'asignaciones__cargo'
-        ).filter(asignaciones__activo=True).distinct()
+        ).filter(asignaciones__activo=True).order_by(*self.ordering).distinct()
 
-        # Capturamos el buscador general 'q'
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -24,11 +25,20 @@ class ListaCargosView(ListView):
                 Q(persona__cuil__icontains=query) |
                 Q(persona__numero_legajo__icontains=query)
             )
-            
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Mantenemos el texto ingresado en el input tras recargar/filtrar
         context['search_query'] = self.request.GET.get('q', '')
         return context
+
+
+class AltaPersonalCargoView(FormView):
+    template_name = 'cargos/alta_cargos.html'
+    form_class = AltaPersonalCargoForm
+    # Cambiar por 'lista_cargos' a secas si removiste la insulación de namespaces globales
+    success_url = reverse_lazy('lista_cargos')
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)

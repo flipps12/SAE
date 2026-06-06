@@ -1,0 +1,109 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container mt-4 text-white">
+    <h2>Registrar Personal con Cargo</h2>
+    <hr>
+    
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger text-dark">
+                {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.apellido.id_for_label }}" class="form-label fw-bold">{{ form.apellido.label }}</label>
+                {{ form.apellido }}
+                <small class="text-danger d-block">{{ form.apellido.errors }}</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.nombre.id_for_label }}" class="form-label fw-bold">{{ form.nombre.label }}</label>
+                {{ form.nombre }}
+                <small class="text-danger d-block">{{ form.nombre.errors }}</small>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.dni.id_for_label }}" class="form-label fw-bold">{{ form.dni.label }}</label>
+                {{ form.dni }}
+                <small class="text-danger d-block">{{ form.dni.errors }}</small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.cuil.id_for_label }}" class="form-label fw-bold">{{ form.cuil.label }}</label>
+                {{ form.cuil }}
+                <small class="text-danger d-block">{{ form.cuil.errors }}</small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.numero_legajo.id_for_label }}" class="form-label fw-bold">{{ form.numero_legajo.label }}</label>
+                {{ form.numero_legajo }}
+                <small class="text-danger d-block">{{ form.numero_legajo.errors }}</small>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label fw-bold">{{ form.fecha_nacimiento.label }}</label>
+                {{ form.fecha_nacimiento }}
+                <small class="text-danger d-block">{{ form.fecha_nacimiento.errors }}</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.fecha_ingreso.id_for_label }}" class="form-label fw-bold">{{ form.fecha_ingreso.label }}</label>
+                {{ form.fecha_ingreso }}
+                <small class="text-danger d-block">{{ form.fecha_ingreso.errors }}</small>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">{{ form.email.label }}</label>
+                {{ form.email }}
+                <small class="text-danger d-block">{{ form.email.errors }}</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.telefono.id_for_label }}" class="form-label fw-bold">{{ form.telefono.label }}</label>
+                {{ form.telefono }}
+                <small class="text-danger d-block">{{ form.telefono.errors }}</small>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.domicilio.id_for_label }}" class="form-label fw-bold">{{ form.domicilio.label }}</label>
+            {{ form.domicilio }}
+            <small class="text-danger d-block">{{ form.domicilio.errors }}</small>
+        </div>
+
+        <h4 class="mt-4 text-warning">Asignación del Cargo Inicial</h4>
+        <hr>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.cargo.id_for_label }}" class="form-label fw-bold">{{ form.cargo.label }}</label>
+                {{ form.cargo }}
+                <small class="text-danger d-block">{{ form.cargo.errors }}</small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.fecha_inicio.id_for_label }}" class="form-label fw-bold">{{ form.fecha_inicio.label }}</label>
+                {{ form.fecha_inicio }}
+                <small class="text-danger d-block">{{ form.fecha_inicio.errors }}</small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.resolucion.id_for_label }}" class="form-label fw-bold">{{ form.resolucion.label }}</label>
+                {{ form.resolucion }}
+                <small class="text-danger d-block">{{ form.resolucion.errors }}</small>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Registrar y Asignar</button>
+            <a href="{% url 'lista_cargos' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

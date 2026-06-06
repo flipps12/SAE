@@ -2,7 +2,7 @@ from django import forms
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from .validators import dni_validator, cuil_validator
-from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico, Comunicado, Profesor
+from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico, Comunicado, Profesor, TipoCargo, PersonalCargo, AsignacionCargo
 
 # --------------------------------------------------------------------------------------
 # ---                           Form ImportarAlumnos                                 ---
@@ -226,3 +226,80 @@ class AltaProfesorForm(forms.Form):
             )
             
             return profesor
+
+class AltaPersonalCargoForm(forms.Form):
+    # Campos base de Persona
+    nombre = forms.CharField(max_length=50, label="Nombre")
+    apellido = forms.CharField(max_length=50, label="Apellido")
+    dni = forms.CharField(max_length=8, label="DNI", validators=[dni_validator])
+    cuil = forms.CharField(max_length=11, label="CUIL", validators=[cuil_validator])
+    numero_legajo = forms.CharField(max_length=30, label="Número de Legajo")
+    fecha_nacimiento = forms.DateField(
+        required=False, label="Fecha de Nacimiento", widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    fecha_ingreso = forms.DateField(
+        required=False, label="Fecha de Ingreso", widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    email = forms.EmailField(required=False, label="Email")
+    telefono = forms.CharField(max_length=20, required=False, label="Teléfono")
+    domicilio = forms.CharField(widget=forms.Textarea(attrs={'rows': 2}), required=False, label="Domicilio")
+    
+    # Datos de la asignación inicial del Cargo
+    cargo = forms.ModelChoiceField(
+        queryset=TipoCargo.objects.all(), 
+        label="Cargo a Asignar",
+        empty_label="-- Seleccione un tipo de cargo --"
+    )
+    fecha_inicio = forms.DateField(
+        label="Fecha de Toma de Posesión", 
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    resolucion = forms.CharField(max_length=100, required=False, label="Nro. de Resolución / Disposición")
+
+    def clean_dni(self):
+        dni = self.cleaned_data.get('dni')
+        if Persona.objects.filter(dni=dni).exists():
+            raise forms.ValidationError("Ya existe una persona registrada con este DNI.")
+        return dni
+
+    def clean_cuil(self):
+        cuil = self.cleaned_data.get('cuil')
+        if Persona.objects.filter(cuil=cuil).exists():
+            raise forms.ValidationError("Ya existe una persona registrada con este CUIL.")
+        return cuil
+
+    def clean_numero_legajo(self):
+        legajo = self.cleaned_data.get('numero_legajo')
+        if Persona.objects.filter(numero_legajo=legajo).exists():
+            raise forms.ValidationError("Este número de legajo ya se encuentra asignado.")
+        return legajo
+
+    def save(self):
+        with transaction.atomic():
+            # 1. Creamos la instancia de Persona
+            persona = Persona.objects.create(
+                nombre=self.cleaned_data['nombre'],
+                apellido=self.cleaned_data['apellido'],
+                dni=self.cleaned_data['dni'],
+                cuil=self.cleaned_data['cuil'],
+                numero_legajo=self.cleaned_data['numero_legajo'],
+                fecha_nacimiento=self.cleaned_data.get('fecha_nacimiento'),
+                fecha_ingreso=self.cleaned_data.get('fecha_ingreso'),
+                email=self.cleaned_data.get('email', ''),
+                telefono=self.cleaned_data.get('telefono', ''),
+                domicilio=self.cleaned_data.get('domicilio', '')
+            )
+            
+            # 2. Creamos el perfil contenedor para cargos (OneToOne con Persona)
+            personal_cargo = PersonalCargo.objects.create(persona=persona)
+            
+            # 3. Creamos la relación intermedia de la asignación del cargo específico
+            AsignacionCargo.objects.create(
+                persona_cargo=personal_cargo,
+                cargo=self.cleaned_data['cargo'],
+                fecha_inicio=self.cleaned_data['fecha_inicio'],
+                resolucion=self.cleaned_data.get('resolucion', ''),
+                activo=True
+            )
+            
+            return personal_cargo

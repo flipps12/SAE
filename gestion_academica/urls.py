@@ -2,7 +2,7 @@ from django.urls import path
 # Importamos directamente los archivos del paquete views
 from .views import alumnos, asistencias, calificaciones, cargos, comunicados, profesores
 
-app_name = 'gestion_academica'
+# app_name = 'gestion_academica'
 
 urlpatterns = [
     # --- DOMINIO: ALUMNOS ---

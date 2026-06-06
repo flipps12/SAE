@@ -13,6 +13,7 @@ urlpatterns = [
 
     # --- DOMINIO: PROFESORES Y CARGOS ---
     path('profesores/', profesores.ProfesorListView.as_view(), name='listado_profesor'),
+    path('profesores/nuevo/', profesores.AltaProfesorView.as_view(), name='alta_profesor'),
     path('cargos/', cargos.ListaCargosView.as_view(), name='lista_cargos'),
 
     # --- DOMINIO: CALIFICACIONES ---

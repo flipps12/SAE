@@ -1,0 +1,205 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4 text-white">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fa-solid fa-table-cells me-2 text-success"></i> Planilla Digital de Calificaciones</h2>
+        <span class="badge bg-secondary font-monospace">Modo: Registro de Aula</span>
+    </div>
+
+    <!-- MENSAJES DE ERROR / ÉXITO (DUE TO DUPLICATES) -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                <i class="fa-solid {% if message.tags == 'error' %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- SELECTORES DE FILTRO SUPERIOR -->
+    <form method="GET" action="" id="selector-planilla-form" class="row g-3 mb-4 p-3 card flex-row flex-wrap align-items-end bg-dark border-secondary">
+        <div class="col-md-2">
+            <label for="ciclo" class="form-label fw-bold text-muted small">Ciclo Lectivo</label>
+            <select name="ciclo" id="ciclo" class="form-select form-select-sm" onchange="document.getElementById('selector-planilla-form').submit()">
+                <option value="">-- Seleccione --</option>
+                {% for c in ciclos %}
+                    <option value="{{ c.id }}" {% if c.id == selected_ciclo %}selected{% endif %}>{{ c.anio }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="curso" class="form-label fw-bold text-muted small">Curso / División</label>
+            <select name="curso" id="curso" class="form-select form-select-sm" onchange="document.getElementById('selector-planilla-form').submit()">
+                <option value="">-- Seleccione Curso --</option>
+                {% for cur in cursos %}
+                    <option value="{{ cur.id }}" {% if cur.id == selected_curso %}selected{% endif %}>{{ cur }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="dictado" class="form-label fw-bold text-muted small">Materia asignada</label>
+            <select name="dictado" id="dictado" class="form-select form-select-sm" onchange="document.getElementById('selector-planilla-form').submit()">
+                <option value="">-- Seleccione Materia --</option>
+                {% for d in dictados %}
+                    <option value="{{ d.id }}" {% if d.id == selected_dictado %}selected{% endif %}>{{ d.materia.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 text-end">
+            {% if selected_dictado %}
+                <button type="submit" form="planilla-notas-form" class="btn btn-success btn-sm w-100 fw-bold">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Cambios en Planilla
+                </button>
+            {% endif %}
+        </div>
+    </form>
+
+    {% if selected_dictado %}
+    <form method="POST" action="?ciclo={{ selected_ciclo }}&curso={{ selected_curso }}&dictado={{ selected_dictado }}" id="planilla-notas-form">
+        {% csrf_token %}
+
+        <div class="table-responsive rounded shadow-sm border border-secondary bg-dark text-light">
+            <table class="table table-dark table-hover align-middle mb-0 text-center text-nowrap table-sm">
+               <thead>
+                    <tr class="table-active align-top">
+                        <th class="text-start ps-3 align-middle" style="min-width: 240px; border-right: 2px solid #4f5d73;">
+                            Listado de Alumnos
+                        </th>
+                        
+                        <!-- 1. Cabeceras Actividades -->
+                        {% for actividad in actividades_cabecera %}
+                        <th class="px-2 border-end border-secondary text-center" style="width: 90px; background-color: #212529;">
+                            <div class="text-info fw-bold truncate-text" style="max-width: 100px;" title="{{ actividad.nombre }}">
+                                {{ actividad.nombre }}
+                            </div>
+                            <span class="badge bg-secondary" style="font-size: 0.65rem;">{{ actividad.cuatrimestre }}° C</span>
+                        </th>
+                        {% endfor %}
+
+                        <!-- 2. Cabeceras Etapas -->
+                        {% for etapa_nombre in etapas_cabecera %}
+                        <th class="px-2 border-end border-info bg-gradient bg-opacity-10 bg-info text-center" style="width: 100px;">
+                            <div class="text-light fw-bold text-center" style="font-size: 0.8rem;">{{ etapa_nombre }}</div>
+                            <span class="text-info small" style="font-size: 0.65rem;">Cierre</span>
+                        </th>
+                        {% endfor %}
+
+                        <!-- 3. Cabeceras Dinámicas de Intensificación por Fecha -->
+                        {% for int_cab in intensificaciones_cabecera %}
+                        <th class="px-2 border-end border-danger bg-gradient bg-opacity-10 bg-danger text-center" style="width: 115px;">
+                            <div class="text-danger fw-bold" style="font-size: 0.8rem;">{{ int_cab.str_cabecera }}</div>
+                            <span class="text-muted small" style="font-size: 0.65rem;">Intensificación</span>
+                        </th>
+                        {% endfor %}
+
+                        <!-- Panel alta nueva Actividad -->
+                        <th class="bg-gradient bg-opacity-10 bg-warning px-2 border-end border-secondary" style="width: 220px; border-left: 2px solid #ffc107;">
+                            <div class="text-warning fw-bold mb-1 text-start" style="font-size: 0.75rem;"><i class="fa-solid fa-circle-plus"></i> NUEVA ACTIVIDAD</div>
+                            <input type="text" name="nuevo_nombre_actividad" class="form-control form-control-sm mb-1 bg-dark text-white border-warning" placeholder="Ej: TP Final">
+                            <div class="d-flex gap-1">
+                                <select name="nuevo_cuatrimestre" class="form-select form-select-sm bg-dark text-white border-warning" style="font-size: 0.7rem;">
+                                    <option value="1">1° C</option>
+                                    <option value="2">2° C</option>
+                                </select>
+                                <input type="date" name="nueva_fecha_actividad" class="form-control form-control-sm bg-dark text-white border-warning" value="{{ today|date:'Y-m-d' }}" style="font-size: 0.7rem;">
+                            </div>
+                        </th>
+
+                        <!-- Panel alta nueva Intensificación -->
+                        <th class="bg-gradient bg-opacity-10 bg-danger px-2" style="width: 220px; border-left: 2px solid #dc3545;">
+                            <div class="text-danger fw-bold mb-1 text-start" style="font-size: 0.75rem;"><i class="fa-solid fa-calendar-plus"></i> NUEVA INTENSIFICACIÓN</div>
+                            <span class="text-muted d-block mb-1" style="font-size: 0.65rem;">Seleccioná la fecha del examen:</span>
+                            <input type="date" name="nueva_fecha_intensificacion" class="form-control form-control-sm bg-dark text-white border-danger" value="{{ today|date:'Y-m-d' }}">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in matriz_alumnos %}
+                    <tr>
+                        <!-- Alumno -->
+                        <td class="text-start ps-3 fw-semibold border-secondary" style="border-right: 2px solid #4f5d73;">
+                            {{ fila.alumno.persona.apellido }}, {{ fila.alumno.persona.nombre }}
+                        </td>
+
+                        <!-- Celdas Actividades -->
+                        {% for nota in fila.notas_columnas %}
+                        <td class="p-1 border-end border-secondary text-center">
+                            {% if nota.id %}
+                                <input type="number" name="nota_existente_{{ nota.id }}" value="{{ nota.valor }}" class="form-control form-control-sm mx-auto text-center fw-bold" min="1" max="10" style="max-width: 50px; background-color: #2b3035; color: #fff;">
+                            {% else %}
+                                <input type="number" name="nota_nueva_celda_{{ nota.identificador_vacio }}" value="" class="form-control form-control-sm mx-auto text-center opacity-70" min="1" max="10" placeholder="-" style="max-width: 50px; background-color: #1f2327; border: 1px dashed #6c757d;">
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+
+                        <!-- Celdas Etapas -->
+                        {% for etapa_nota in fila.etapas_columnas %}
+                        <td class="p-1 border-end border-info bg-dark bg-opacity-25 text-center">
+                            {% if etapa_nota.id %}
+                                <input type="number" name="etapa_existente_{{ etapa_nota.id }}" value="{{ etapa_nota.valor_numerico }}" class="form-control form-control-sm mx-auto text-center fw-bold text-info border-info" min="1" max="10" style="max-width: 50px; background-color: #212529;">
+                            {% else %}
+                                <input type="number" name="etapa_nueva_celda_{{ etapa_nota.identificador_vacio }}" value="" class="form-control form-control-sm mx-auto text-center text-info" min="1" max="10" placeholder="-" style="max-width: 50px; background-color: #1f2327; border: 1px dashed #0dcaf0;">
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+
+                        <!-- Celdas de Intensificación (Soportando repetidos en la misma fecha) -->
+                        {% for int_nota in fila.intensificaciones_columnas %}
+                        <td class="p-1 border-end border-danger bg-dark bg-opacity-25 text-center">
+                            {% if int_nota.id %}
+                                <!-- Si existe, se vincula directo a su ID real de base de datos -->
+                                <input type="number" step="0.01" name="intensificacion_existente_{{ int_nota.id }}" value="{{ int_nota.valor }}" class="form-control form-control-sm mx-auto text-center fw-bold text-danger border-danger" min="1" max="10" style="max-width: 55px; background-color: #212529;">
+                            {% else %}
+                                <!-- Si está vacío, permite completarlo respetando la fecha de la columna -->
+                                <input type="number" step="0.01" name="intensificacion_nueva_celda_{{ int_nota.identificador_vacio }}" value="" class="form-control form-control-sm mx-auto text-center text-danger" min="1" max="10" placeholder="-" style="max-width: 55px; background-color: #1f2327; border: 1px dashed #dc3545;">
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+
+                        <!-- Input para la Nota de la Nueva Actividad de Cursada -->
+                        <td class="p-1 bg-dark text-center border-end border-secondary" style="border-left: 2px solid #ffc107;">
+                            <input type="number" name="nueva_nota_alumno_{{ fila.alumno.id }}" class="form-control form-control-sm mx-auto text-center border-warning fw-bold text-warning" min="1" max="10" placeholder="-" style="max-width: 55px; background-color: #1f2327;">
+                        </td>
+
+                        <!-- Input para la Nota de la Nueva Columna de Intensificación -->
+                        <td class="p-1 bg-dark text-center" style="border-left: 2px solid #dc3545;">
+                            <input type="number" step="0.01" name="nueva_intensificacion_alumno_{{ fila.alumno.id }}" class="form-control form-control-sm mx-auto text-center border-danger fw-bold text-danger" min="1" max="10" placeholder="-" style="max-width: 55px; background-color: #1f2327;">
+                        </td>
+                    </tr>
+                    {% endfor %}
+</tbody>
+            </table>
+        </div>
+        
+        <div class="d-flex justify-content-end mt-3 mb-5">
+            <button type="submit" class="btn btn-success px-4 py-2 fw-bold shadow-sm">
+                <i class="fa-solid fa-circle-check me-2"></i> Confirmar y Guardar Registro Completo
+            </button>
+        </div>
+    </form>
+    {% else %}
+    <div class="card p-5 text-center bg-dark border-secondary rounded shadow-sm">
+        <div class="my-3 text-muted"><i class="fa-solid fa-folder-open fs-1"></i></div>
+        <h4 class="text-secondary">Faltan Parámetros de Selección</h4>
+        <p class="text-muted mb-0">Por favor, utilice el panel de filtrado superior para cargar el Ciclo Lectivo, Curso y la Materia requerida para desplegar la Planilla del Docente.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .input-nota-planilla:focus {
+        background-color: #ffc107 !important;
+        color: #000 !important;
+        font-weight: bold;
+    }
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+{% endblock %}

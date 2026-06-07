@@ -60,16 +60,14 @@
                             <th class="text-center" style="width: 15%;">Intensificación</th>
                         </tr>
                     </thead>
-                    <tbody>
+                   <tbody>
                         {% for inscripcion in datos.inscripciones %}
                         <tr>
-                            <!-- Nombre de la Materia -->
                             <td class="fw-bold text-light">
                                 {{ inscripcion.dictado.materia.nombre }}
                                 <div class="text-muted small fw-normal">{{ inscripcion.get_condicion_display }}</div>
                             </td>
 
-                            <!-- Notas de Actividades del Alumno -->
                             <td class="text-center">
                                 <div class="d-flex flex-wrap gap-1 justify-content-center">
                                     {% for nota in inscripcion.dictado.notas_actividades.all %}
@@ -78,13 +76,10 @@
                                                 {{ nota.valor }}
                                             </span>
                                         {% endif %}
-                                    {{ commissions }}
-                                        <span class="text-muted small">-</span>
                                     {% endfor %}
                                 </div>
                             </td>
 
-                            <!-- Notas de Etapa (Cierres trimestrales/cuatrimestrales) -->
                             <td class="text-center">
                                 <div class="text-start d-inline-block" style="font-size: 0.85rem;">
                                     {% for nota_etapa in inscripcion.dictado.notas_etapas.all %}
@@ -97,13 +92,10 @@
                                                 {% endif %}
                                             </div>
                                         {% endif %}
-                                    {% empty %}
-                                        <span class="text-muted small">Sin cierres</span>
                                     {% endfor %}
                                 </div>
                             </td>
 
-                            <!-- Notas de Intensificación (Diciembre/Febrero) -->
                             <td class="text-center">
                                 {% for inte in inscripcion.dictado.intensificaciones.all %}
                                     {% if inte.alumno_id == alumno.id %}
@@ -111,8 +103,6 @@
                                             {{ inte.valor }}
                                         </span>
                                     {% endif %}
-                                {% empty %}
-                                    <span class="text-muted small">-</span>
                                 {% endfor %}
                             </td>
                         </tr>

@@ -2,7 +2,7 @@ from django import forms
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from .validators import dni_validator, cuil_validator
-from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico, Comunicado, Profesor, TipoCargo, PersonalCargo, AsignacionCargo
+from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico, Comunicado, Profesor, TipoCargo, PersonalCargo, AsignacionCargo, Turno, Especialidad, Aula
 
 class CursoForm(forms.ModelForm):
     class Meta:
@@ -25,6 +25,34 @@ class CursoForm(forms.ModelForm):
             'especialidad': forms.Select(attrs={
                 'class': 'form-select bg-dark text-white border-secondary'
             }),
+        }
+
+class TurnoForm(forms.ModelForm):
+    class Meta:
+        model = Turno
+        fields = ['nombre', 'valor_falta']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Ej: Mañana'}),
+            'valor_falta': forms.NumberInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'step': '0.01', 'min': 0, 'max': 1}),
+        }
+
+class EspecialidadForm(forms.ModelForm):
+    class Meta:
+        model = Especialidad
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Ej: Técnico en Informática Personal y Profesional'}),
+        }
+
+class AulaForm(forms.ModelForm):
+    class Meta:
+        model = Aula
+        fields = ['nombre', 'capacidad', 'tipo', 'descripcion']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Ej: Aula 204 o Lab de Química'}),
+            'capacidad': forms.NumberInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'min': 1}),
+            'tipo': forms.Select(attrs={'class': 'form-select bg-dark text-white border-secondary'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control bg-dark text-white border-secondary', 'rows': 2, 'placeholder': 'Opcional: ubicación o equipamiento...'}),
         }
 
 # --------------------------------------------------------------------------------------

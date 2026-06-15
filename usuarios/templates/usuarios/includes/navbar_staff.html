@@ -35,11 +35,12 @@
             <li><a class="dropdown-item" href="{% url 'alta_profesor' %}">Docentes</a></li>
             <li><a class="dropdown-item" href="{% url 'alta_cargos' %}">Cargos</a></li>
             <li><a class="dropdown-item" href="{% url 'carga_comunicados' %}">Comunicados</a></li>
-            <li><a class="dropdown-item" href="#">!Especialidades</a></li>
-            <li><a class="dropdown-item" href="#">!Cursos</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_especialidades' %}">Especialidades</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_cursos' %}">Cursos</a></li>
             <li><a class="dropdown-item" href="#">!Grupos</a></li>
             <li><a class="dropdown-item" href="#">!Materias</a></li>
-            <li><a class="dropdown-item" href="#">!Turnos</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_turnos' %}">Turnos</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_aulas' %}">Aulas</a></li>
         </ul>
     </li>
     <li class="nav-item dropdown">

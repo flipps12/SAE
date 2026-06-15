@@ -5,4 +5,4 @@ from . import calificaciones
 from . import cargos
 from . import profesores
 from . import planilla_docente
-from . import cursos
+from . import infraestructura

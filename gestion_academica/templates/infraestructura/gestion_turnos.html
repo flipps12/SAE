@@ -1,0 +1,93 @@
+{% extends "usuarios/base.html" %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-white mb-0">Infraestructura: Turnos Horarios</h2>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">Configuración de franjas horarias y cómputos de inasistencias por turno.</p>
+        </div>
+        <button type="button" class="btn btn-success btn-sm px-3" data-bs-toggle="modal" data-bs-target="#turnoModal" onclick="prepararModalAlta()">
+            <i class="fa-solid fa-square-plus me-2"></i> Crear Nuevo Turno
+        </button>
+    </div>
+
+    <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">Nombre del Turno</th>
+                    <th style="width: 45%;">Valor por Inasistencia (Falta)</th>
+                    <th class="text-center" style="width: 15%;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turno in turnos %}
+                <tr>
+                    <td class="fw-bold text-warning fs-5">{{ turno.nombre }}</td>
+                    <td class="text-light fw-semibold"><i class="fa-solid fa-user-minus text-muted me-2"></i>{{ turno.valor_falta }}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-info btn-sm px-2" data-bs-toggle="modal" data-bs-target="#turnoModal"
+                                onclick="prepararModalEdicion(this)" data-id="{{ turno.id }}" data-nombre="{{ turno.nombre }}" data-falta="{{ turno.valor_falta }}">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-center py-4 text-muted"><i class="fa-solid fa-folder-open fs-3 d-block mb-2"></i>No hay turnos registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="turnoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border border-secondary">
+            <form method="post" action="{% url 'gestion_turnos' %}">
+                {% csrf_token %}
+                <input type="hidden" name="turno_id" id="modal_turno_id" value="">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-info" id="turnoModalLabel">Configuración de Turno</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small text-muted fw-bold">Nombre del Turno</label>
+                            {{ form.nombre }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small text-muted fw-bold">Valor de la Falta</label>
+                            {{ form.valor_falta }}
+                            <div class="form-text text-muted" style="font-size:0.75rem;">{{ form.valor_falta.help_text }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary py-2">
+                    <button type="button" class="btn btn-outline-light btn-sm px-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success btn-sm px-4" id="modal_submit_btn">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function prepararModalAlta() {
+        document.getElementById('turnoModalLabel').innerText = "Registrar Nuevo Turno";
+        document.getElementById('modal_turno_id').value = "";
+        document.getElementById('modal_submit_btn').className = "btn btn-success btn-sm px-4";
+        document.getElementById('modal_submit_btn').innerText = "Registrar Alta";
+        document.getElementsByName('nombre')[0].value = "";
+        document.getElementsByName('valor_falta')[0].value = "0.50";
+    }
+    function prepararModalEdicion(boton) {
+        document.getElementById('turnoModalLabel').innerText = "Modificar Parámetros de Turno";
+        document.getElementById('modal_submit_btn').className = "btn btn-info btn-sm px-4 text-dark fw-bold";
+        document.getElementById('modal_submit_btn').innerText = "Guardar Cambios";
+        document.getElementById('modal_turno_id').value = boton.dataset.id;
+        document.getElementsByName('nombre')[0].value = boton.dataset.nombre;
+        document.getElementsByName('valor_falta')[0].value = boton.dataset.falta;
+    }
+</script>
+{% endblock %}

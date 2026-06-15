@@ -1,8 +1,26 @@
+# gestion_academica/forms.py
 from django import forms
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from .validators import dni_validator, cuil_validator
-from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico, Comunicado, Profesor, TipoCargo, PersonalCargo, AsignacionCargo, Turno, Especialidad, Aula
+from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico, Comunicado, Profesor, TipoCargo, PersonalCargo, AsignacionCargo, Turno, Especialidad, Aula, Materia
+
+class MateriaForm(forms.ModelForm):
+    class Meta:
+        model = Materia
+        fields = ['nombre', 'especialidad', 'tipo']
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control bg-dark text-white border-secondary',
+                'placeholder': 'Ej: Prácticas del Lenguaje / Análisis Matemático'
+            }),
+            'especialidad': forms.Select(attrs={
+                'class': 'form-select bg-dark text-white border-secondary'
+            }),
+            'tipo': forms.Select(attrs={
+                'class': 'form-select bg-dark text-white border-secondary'
+            }),
+        }
 
 class CursoForm(forms.ModelForm):
     class Meta:

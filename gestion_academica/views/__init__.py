@@ -6,3 +6,4 @@ from . import cargos
 from . import profesores
 from . import planilla_docente
 from . import infraestructura
+from . import materias

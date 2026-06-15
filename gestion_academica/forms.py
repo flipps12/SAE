@@ -4,6 +4,29 @@ from django.core.exceptions import ValidationError
 from .validators import dni_validator, cuil_validator
 from .models import Alumno, Persona, Curso, Burbuja, CicloLectivo, HistorialAcademico, Comunicado, Profesor, TipoCargo, PersonalCargo, AsignacionCargo
 
+class CursoForm(forms.ModelForm):
+    class Meta:
+        model = Curso
+        # Dejamos solo los campos que existen estructuralmente en el modelo Curso
+        fields = ['nivel', 'division', 'especialidad']
+        widgets = {
+            'nivel': forms.NumberInput(attrs={
+                'class': 'form-control bg-dark text-white border-secondary', 
+                'min': 1, 
+                'max': 7, 
+                'placeholder': 'Ej: 6'
+            }),
+            'division': forms.NumberInput(attrs={
+                'class': 'form-control bg-dark text-white border-secondary', 
+                'min': 1, 
+                'max': 15, 
+                'placeholder': 'Ej: 1'
+            }),
+            'especialidad': forms.Select(attrs={
+                'class': 'form-select bg-dark text-white border-secondary'
+            }),
+        }
+
 # --------------------------------------------------------------------------------------
 # ---                           Form ImportarAlumnos                                 ---
 # --------------------------------------------------------------------------------------

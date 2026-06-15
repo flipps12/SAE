@@ -1,6 +1,6 @@
 from django.urls import path
 # Importamos directamente los archivos del paquete views
-from .views import alumnos, asistencias, calificaciones, cargos, comunicados, profesores, planilla_docente
+from .views import alumnos, asistencias, calificaciones, cargos, comunicados, profesores, planilla_docente, cursos
 
 # app_name = 'gestion_academica'
 
@@ -29,4 +29,7 @@ urlpatterns = [
     # --- DOMINIO: COMUNICADOS ---
     path('comunicados/', comunicados.TablonComunicadosView.as_view(), name='lista_comunicados'),
     path('comunicados/nuevo/', comunicados.CrearComunicadoView.as_view(), name='carga_comunicados'),
+    
+    # --- DOMINIO: CURSOS ---
+    path('cursos/', cursos.GestionCursosView.as_view(), name='gestion_cursos'),
 ]

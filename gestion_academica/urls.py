@@ -25,6 +25,7 @@ urlpatterns = [
     # --- DOMINIO: ASISTENCIAS ---
     path('asistencias/', asistencias.ListaAsistenciasView.as_view(), name='lista_asistencias'),
     path('alumno/<int:pk>/asistencias/', asistencias.DetalleAsistenciasAlumnoView.as_view(), name='detalle_asistencias_alumno'),
+    path('planilla-preceptor/', asistencias.PlanillaAsistenciaPreceptorView.as_view(), name='planilla_preceptor'),
 
     # --- DOMINIO: COMUNICADOS ---
     path('comunicados/', comunicados.TablonComunicadosView.as_view(), name='lista_comunicados'),

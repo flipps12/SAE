@@ -1,0 +1,118 @@
+{% extends "usuarios/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'usuarios/css/editar_profesor.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 text-white">
+            Detalle del Profesor: {{ profesor.persona.nombre }}, {{ profesor.persona.apellido }}
+        </h2>
+        <a href="{% url 'listado_profesor' %}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Volver al Listado
+        </a>
+    </div>
+
+    <div class="mb-4">
+        <h4 class="text-white mb-3">Datos Personales</h4>
+        <div class="row">
+            <div class="col-md-3 form-group"><label class="text-secondary">Nombre</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{ profesor.persona.nombre }}</div>
+            </div>
+            <div class="col-md-3 form-group"><label class="text-secondary">Apellido</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{ profesor.persona.apellido }}
+                </div>
+            </div>
+            <div class="col-md-2 form-group"><label class="text-secondary">DNI</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{ profesor.persona.dni }}</div>
+            </div>
+            <div class="col-md-2 form-group"><label class="text-secondary">CUIL</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{ profesor.persona.cuil }}</div>
+            </div>
+            <div class="col-md-2 form-group"><label class="text-secondary">Legajo</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{ profesor.persona.numero_legajo }}
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-3 form-group"><label class="text-secondary">Email</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{ profesor.persona.email }}</div>
+            </div>
+            <div class="col-md-3 form-group"><label class="text-secondary">Teléfono</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{ profesor.persona.telefono }}</div>
+            </div>
+            <div class="col-md-3 form-group"><label class="text-secondary">F. Ingreso</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{profesor.persona.fecha_ingreso|default:"-" }}</div>
+            </div>
+            <div class="col-md-3 form-group"><label class="text-secondary">Tel. Emergencia</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{profesor.telefono_emergencia|default:"-" }}</div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-9 form-group"><label class="text-secondary">Domicilio</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{profesor.persona.domicilio|default:"-" }}</div>
+            </div>
+            <div class="col-md-3 form-group"><label class="text-secondary">F. Nacimiento</label>
+                <div class="p-2 bg-dark text-white border border-secondary rounded">{{profesor.persona.fecha_nacimiento|default:"-" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="text-white mt-4">Dictados y Horarios</h4>
+
+    <div class="tabla-alumnos-contenedor" style="overflow-x: auto;">
+        <table class="table-sae">
+            <thead>
+                <tr>
+                    <th>Materia</th>
+                    <th>Tipo Mat.</th>
+                    <th>Curso</th>
+                    <th>Ciclo Lectivo</th>
+                    <th>Grupo</th>
+                    <th>PID</th>
+                    <th>CUPOF</th>
+                    <th>Sec.</th>
+                    <th>Toma Posesión</th>
+                    <th>Sit. Revista</th>
+                    <th>Forma Ingreso</th>
+                    <th>Horarios (Día/Inicio/Fin/Aula)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dictado in dictados %}
+                <tr>
+                    <td>{{ dictado.materia.nombre }}</td>
+                    <td>{{ dictado.materia.get_tipo_display }}</td>
+                    <td>{{ dictado.curso }}</td>
+                    <td>{{ dictado.ciclo_lectivo }}</td>
+                    <td>{{ dictado.get_grupo_display }}</td>
+                    <td>{{ dictado.pid|default:"-" }}</td>
+                    <td>{{ dictado.cupof|default:"-" }}</td>
+                    <td>{{ dictado.secuencia|default:"-" }}</td>
+                    <td>{{ dictado.toma_posesion|date:"d/m/Y"|default:"-" }}</td>
+                    <td>{{ dictado.get_situacion_revista_display|default:"-" }}</td>
+                    <td>{{ dictado.get_forma_ingreso_display|default:"-" }}</td>
+                    <td class="td-horarios-limpio">
+                        {% for h in dictado.horarios.all %}
+                        <div class="horario-sin-estilo">
+                            {{ h.get_dia_semana_display }} {{ h.horario_inicio|time:"H:i" }} - {{
+                            h.horario_fin|time:"H:i" }} {{ h.aula|default:"" }}
+                        </div>
+                        {% empty %}
+                        -
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12" class="text-center">No hay dictados asignados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "usuarios/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid mt-4" style="max-width: 1000px;">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h2 class="mb-0 text-white">Editar Personal: {{ persona.nombre }} {{ persona.apellido }}</h2>
+        <a href="{% url 'lista_cargos' %}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Volver al Listado
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 bg-white text-dark mb-5">
+        <div class="card-body p-4">
+            
+            <form method="POST">
+                {% csrf_token %}
+
+                <h4 class="mb-3 text-primary border-bottom pb-2">Datos Personales</h4>
+                <div class="row g-3 mb-4">
+                    {% for field in form_persona %}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-secondary">{{ field.label }}</label>
+                        {{ field }}
+                        <div class="text-danger small">{{ field.errors }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <h4 class="mb-3 text-primary border-bottom pb-2">Asignaciones de Cargo</h4>
+                {{ formset.management_form }}
+                
+                <div class="tabla-alumnos-contenedor" style="overflow-x: auto; width: 100%; display: block;">
+                    <table class="table-sae" style="min-width: 1400px;">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 250px;">Cargo</th>
+                                <th style="min-width: 120px;">F. Inicio</th>
+                                <th style="min-width: 120px;">F. Cese</th>
+                                <th style="min-width: 100px;">PID</th>
+                                <th style="min-width: 100px;">CUPOF</th>
+                                <th style="min-width: 80px;">Sec.</th>
+                                <th style="min-width: 180px;">Sit. Revista</th>
+                                <th style="min-width: 180px;">Forma Ingreso</th>
+                                <th style="min-width: 150px;">Resolución</th>
+                                <th style="min-width: 80px;">Estado</th>
+                                <th style="min-width: 60px;">Borrar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for form in formset %}
+                            {{ form.id }}
+                            <tr>
+                                <td>{{ form.cargo }}</td>
+                                <td>{{ form.fecha_inicio }}</td>
+                                <td>{{ form.fecha_fin }}</td>
+                                <td>{{ form.pid }}</td>
+                                <td>{{ form.cupof }}</td>
+                                <td>{{ form.secuencia }}</td>
+                                <td>{{ form.situacion_revista }}</td>
+                                <td>{{ form.forma_ingreso }}</td>
+                                <td>{{ form.resolucion }}</td>
+                                <td class="text-center">
+                                    <div class="form-check form-switch d-inline-block">
+                                        {{ form.activo }}
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div style="display:none;">{{ form.DELETE }}</div>
+                                    {% if form.instance.pk %}
+                                        <a href="javascript:void(0);" onclick="borrarFila(this)" class="text-danger">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted small">Nuevo</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a href="{% url 'lista_cargos' %}" class="btn btn-light border">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-regular fa-floppy-disk me-2"></i>Guardar Todos los Cambios
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+    <script src="{% static 'usuarios/js/cargos.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+

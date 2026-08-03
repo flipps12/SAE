@@ -1,0 +1,79 @@
+/* --- Estilos base para la tabla --- */
+.table-sae {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-sae td {
+    padding: 5px !important;
+    text-align: center !important;
+}
+
+/* --- ESTILO GENERAL (Sin ancho forzado para no romper nada) --- */
+.table-sae input[type="number"], 
+.table-sae input[type="text"],
+.table-sae select {
+    display: inline-block !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    box-sizing: border-box; /* Importante para que el ancho sea preciso */
+}
+
+/* --- TAMAÑOS ESPECÍFICOS --- */
+
+/* Todos los inputs de número generales (si quieres que tengan un estándar) */
+.table-sae input[type="number"] {
+    width: 60px !important;
+}
+
+/* Actividades: Actividad (text) */
+input[name^="act-"][name$="nombre_actividad"] {
+    width: 200px !important;
+}
+
+/* Actividades: Fecha (date) */
+input[name^="act-"][name$="fecha"] {
+    width: 150px !important;
+}
+
+/* Actividades: Cuatrimestre (select) */
+select[name^="act-"][name$="cuatrimestre"] {
+    width: 150px !important;
+}
+
+/* Intensificación: Fecha (date) */
+input[name^="int-"][name$="fecha"] {
+    width: 150px !important;
+}
+
+/* --- General para inputs de número (flechas) --- */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+
+
+/* --- Limpiar el botón de borrar (tacho) --- */
+.btn-outline-danger {
+    background-color: transparent !important;
+    border: none !important;
+    color: #dc3545 !important; /* Fuerza el color rojo al contenido del botón */
+    padding: 0 8px !important; /* Un poco de padding para que sea fácil de hacer clic */
+    box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Forzar que el ícono (la fuente) sea rojo */
+.btn-outline-danger i, 
+.btn-outline-danger {
+    color: #dc3545 !important;
+}

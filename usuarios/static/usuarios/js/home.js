@@ -57,3 +57,13 @@ window.addEventListener('resize', function() {
     particles = [];
     createParticles();
 });
+
+// Asegurar que el canvas de partículas no bloquee el scroll y se quede de fondo
+const canvasElement = document.getElementById('particles-canvas');
+if (canvasElement) {
+    canvasElement.style.position = 'fixed';
+    canvasElement.style.top = '0';
+    canvasElement.style.left = '0';
+    canvasElement.style.zIndex = '-1'; // Ponerlo detrás de todo
+    canvasElement.style.pointerEvents = 'none'; // Permitir hacer click en gráficos
+}

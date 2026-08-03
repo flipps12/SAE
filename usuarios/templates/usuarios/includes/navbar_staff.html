@@ -5,15 +5,30 @@
     </li>
     
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'listado_profesor' %}">Docentes</a>
+        <a class="nav-link" href="{% url 'listado_profesor' %}">Profesores</a>
     </li>
 
     <li class="nav-item">
         <a class="nav-link" href="{% url 'lista_cargos' %}">Cargos</a>
     </li>
 
-     <li class="nav-item">
-        <a class="nav-link" href="{% url 'lista_calificaciones' %}">Calificaciones</a>
+    <li class="nav-item">
+        <a class="nav-link" href="#">No docente</a>
+    </li>
+    
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Calificaciones</a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'lista_calificaciones' %}">Calificaciones</a></li>
+            <li><a class="dropdown-item" href="{% url 'planilla_docente' %}">Planilla del Docente</a></li>
+
+            <li><hr class="dropdown-divider"></li>
+            
+            <li><a class="dropdown-item" href="{% url 'gestion_boletines' %}">Boletines</a></li>
+        </ul>
+
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'lista_asistencias' %}">Asistencia</a>
     </li>
 
      <li class="nav-item">
@@ -21,35 +36,37 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'lista_asistencias' %}">Asistencia</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="#">!Documentacion</a>
+        <a class="nav-link" href="#">Documentacion</a>
     </li>
     
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Configuracion SAE</a>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'carga_dinamica_alumnos' %}">Alumnos</a></li>
-            <li><a class="dropdown-item" href="{% url 'alta_profesor' %}">Docentes</a></li>
-            <li><a class="dropdown-item" href="{% url 'planilla_preceptor' %}">Planilla Preceptor</a></li>
-            <li><a class="dropdown-item" href="{% url 'planilla_docente' %}">Planilla Docentes</a></li>
-            <li><a class="dropdown-item" href="{% url 'alta_cargos' %}">Cargos</a></li>
-            <li><a class="dropdown-item" href="{% url 'carga_comunicados' %}">Comunicados</a></li>
-            <li><a class="dropdown-item" href="{% url 'gestion_especialidades' %}">Especialidades</a></li>
-            <li><a class="dropdown-item" href="{% url 'gestion_cursos' %}">Cursos</a></li>
-            <li><a class="dropdown-item" href="#">!Grupos</a></li>
-            <li><a class="dropdown-item" href="{% url 'gestion_materias' %}">Materias</a></li>
-            <li><a class="dropdown-item" href="{% url 'gestion_turnos' %}">Turnos</a></li>
-            <li><a class="dropdown-item" href="{% url 'gestion_aulas' %}">Aulas</a></li>
+            <li><a class="dropdown-item" href="{% url 'crear_alumno' %}">Alumnos</a></li>
+            <li><a class="dropdown-item" href="{% url 'carga_dinamica_alumnos' %}">Carga Matricular Alumnos</a></li>
+            <li><a class="dropdown-item" href="{% url 'crear_profesor' %}">Docentes</a></li>
+
+            <li><hr class="dropdown-divider"></li>
+
+            <li><a class="dropdown-item" href="{% url 'gestion_ciclo_lectivo' %}">Ciclo Lectivo</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_tipo_cargo' %}">Tipos de Cargo</a></li>
+            <li><a class="dropdown-item" href="{% url 'alta_cargos' %}">Alta de Personal con Cargo</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_especialidad' %}">Especialidades</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_curso' %}">Cursos</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_materia' %}">Materias</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_turno' %}">Turnos</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_aula' %}">Aulas</a></li>
+            <li><a class="dropdown-item" href="{% url 'gestion_burbuja' %}">Burbujas</a></li>
         </ul>
     </li>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Respaldos</a>
         <ul class="dropdown-menu">
             <li><a class="nav-link" href="{% url 'importar_alumnos' %}">Importar Alumnos</a></li>
+            <li><a class="nav-link" href="{% url 'importar_profesores' %}">Importar Profesores</a></li>
             
         </ul>
     </li>
 </ul>
+
+

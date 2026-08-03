@@ -1,0 +1,325 @@
+{% extends "usuarios/base.html" %}
+
+{% block titulo %}
+Gestión de Boletines
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <h2 class="mb-4 text-white">
+        Gestión de Boletines
+    </h2>
+
+    <!-- FILTROS -->
+
+    <form method="GET"
+          class="row g-3 mb-4 p-3 card flex-row flex-wrap align-items-end">
+
+        <div class="col-md-6">
+
+            <label class="form-label fw-bold">
+                Buscador General
+            </label>
+
+            <input
+                type="text"
+                name="q"
+                class="form-control"
+                placeholder="Buscar curso o especialidad..."
+                value="{{ q }}">
+
+        </div>
+
+        <div class="col-md-4">
+
+            <label class="form-label fw-bold">
+                Especialidad
+            </label>
+
+            <select
+                name="especialidad"
+                class="form-select">
+
+                <option value="">
+                    Todas las especialidades
+                </option>
+
+                {% for esp in especialidades %}
+
+                <option
+                    value="{{ esp.id }}"
+                    {% if especialidad_seleccionada == esp.id|stringformat:"s" %}
+                    selected
+                    {% endif %}>
+
+                    {{ esp.nombre }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button
+                type="submit"
+                class="btn btn-primary w-100">
+
+                Filtrar
+
+            </button>
+
+        </div>
+
+    </form>
+
+    <div class="row">
+
+        <!-- CURSOS -->
+
+        <div class="col-lg-3 mb-4">
+
+            <div class="card h-100">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+
+                        Lista de Cursos
+
+                    </h5>
+
+                </div>
+
+                <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+
+                    <table class="table align-middle mb-0">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+
+                                    Curso - Especialidad
+
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for curso in cursos %}
+
+                        <tr
+
+                            onclick="window.location='?q={{ q }}&especialidad={{ especialidad_seleccionada }}&curso={{ curso.id }}'"
+
+                            style="cursor:pointer"
+
+                            {% if curso.id|stringformat:"s" == curso_seleccionado %}
+                            class="table-active"
+                            {% endif %}>
+
+                            <td>
+
+                                <small class="text-white d-block mt-1">
+
+                                    {{ curso.nivel }}° {{ curso.division }}° - {{ curso.especialidad.nombre }}
+
+                                </small>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td class="text-center py-4 text-muted">
+
+                                No se encontraron cursos.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ALUMNOS -->
+
+        <div class="col-lg-9">
+
+            <div class="card h-100">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <h5 class="mb-0">
+
+                        {% if curso_actual %}
+
+                            {{ curso_actual.nivel }}°
+                            {{ curso_actual.division }}°
+                            -
+                            {{ curso_actual.especialidad.nombre }}
+
+                        {% else %}
+
+                            Alumnos
+
+                        {% endif %}
+
+                    </h5>
+
+                    {% if alumnos %}
+
+                    <button class="btn btn-primary btn-sm">
+
+                        <i class="fa-solid fa-file-pdf me-2"></i>
+
+                        Generar Boletines
+
+                    </button>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+                
+                {% if alumnos %}
+
+                <table class="table align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th width="110">
+
+                                Dni
+
+                            </th>
+
+                            <th>
+
+                                Apellido y Nombre
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for inscripcion in alumnos %}
+
+                        <tr>
+
+                            <td class="fw-bold">
+
+                                {{ inscripcion.alumno.persona.dni }}
+
+                            </td>
+
+                            <td>
+
+                                {{ inscripcion.alumno.persona.apellido }},
+                                {{ inscripcion.alumno.persona.nombre }}
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="3" class="text-center py-4 text-muted">
+
+                                No hay alumnos para mostrar.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+                {% else %}
+
+                <table class="table align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th width="110">
+
+                                Dni
+
+                            </th>
+
+                            <th>
+
+                                Apellido y Nombre
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td colspan="3" class="text-center py-5 text-muted">
+
+                                <i class="fa-solid fa-users me-2"></i>
+
+                                Seleccione un curso para visualizar los alumnos.
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+                {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endblock %}

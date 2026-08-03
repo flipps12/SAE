@@ -1,0 +1,266 @@
+{% extends "usuarios/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'usuarios/css/editar_calificaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4" style="max-width: 1000px;">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h2 class="mb-0 text-white">
+            Calificaciones: {{ alumno.persona.apellido }}, {{ alumno.persona.nombre }}
+        </h2>
+
+        <a href="{% url 'lista_calificaciones' %}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Volver al Listado
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 bg-white text-dark mb-5">
+        <div class="card-body p-4">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <!-- ================= ETAPAS ================= -->
+                <h4 class="mb-3 text-primary border-bottom pb-2">
+                    Notas de Etapa (Boletín)
+                </h4>
+
+                {{ formsets.etapa.management_form }}
+
+                <div class="tabla-alumnos-contenedor mb-4" style="overflow-x:auto;">
+                    <table class="table-sae" style="width:100%; border-collapse:collapse; table-layout:fixed;">
+                        <thead>
+                            <tr>
+                                {% for form in formsets.etapa %}
+                                    <th class="text-center">
+                                        {{ form.instance.etapa }}
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                {% for form in formsets.etapa %}
+
+                                    {{ form.id }}
+                                    {{ form.etapa.as_hidden }}
+
+                                    <td class="text-center p-2">
+
+                                        <div class="mb-2">
+                                            {{ form.valor_numerico }}
+                                        </div>
+
+                                        {% if form.instance.etapa == "1C" or form.instance.etapa == "2C" %}
+
+                                            <div class="small text-muted mb-1">
+                                                Previa
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <select name="{{ form.valoracion_previa.html_name }}"
+                                                        id="{{ form.valoracion_previa.id_for_label }}"
+                                                        class="form-select form-select-sm">
+
+                                                    {% for value, label in form.fields.valoracion_previa.choices %}
+                                                        <option value="{{ value }}"
+                                                                {% if form.valoracion_previa.value == value %}selected{% endif %}>
+                                                            {{ value }}
+                                                        </option>
+                                                    {% endfor %}
+
+                                                </select>
+                                            </div>
+
+                                            <div class="small text-muted mb-1">
+                                                Cierre
+                                            </div>
+
+                                            <div>
+                                                <select name="{{ form.valor_conceptual.html_name }}"
+                                                        id="{{ form.valor_conceptual.id_for_label }}"
+                                                        class="form-select form-select-sm">
+
+                                                    {% for value, label in form.fields.valor_conceptual.choices %}
+                                                        <option value="{{ value }}"
+                                                                {% if form.valor_conceptual.value == value %}selected{% endif %}>
+                                                            {{ value }}
+                                                        </option>
+                                                    {% endfor %}
+
+                                                </select>
+                                            </div>
+
+                                        {% else %}
+
+                                            {{ form.valoracion_previa.as_hidden }}
+                                            {{ form.valor_conceptual.as_hidden }}
+
+                                            <div style="height: 110px;"></div>
+
+                                        {% endif %}
+
+                                        <div style="display:none;">
+                                            {{ form.DELETE }}
+                                        </div>
+
+                                    </td>
+
+                                {% endfor %}
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- ================= ACTIVIDADES ================= -->
+                <h4 class="mb-3 text-primary border-bottom pb-2">
+                    Notas de Actividades (TPs / Parciales)
+                </h4>
+
+                {{ formsets.act.management_form }}
+
+                <div class="tabla-alumnos-contenedor mb-4" style="overflow-x:auto;">
+
+                    <table class="table-sae" style="width:100%; border-collapse:collapse;">
+
+                        <thead>
+                            <tr>
+                                <th class="text-center bg-light">Actividad</th>
+                                <th class="text-center bg-light">Nota</th>
+                                <th class="text-center bg-light">Cuatrimestre</th>
+                                <th class="text-center bg-light">Fecha</th>
+                                <th class="text-center bg-light">Borrar</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for form in formsets.act %}
+                            <tr>
+
+                                {{ form.id }}
+
+                                <td>
+                                    {{ form.nombre_actividad }}
+                                </td>
+
+                                <td>
+                                    {{ form.valor }}
+                                </td>
+
+                                <td>
+                                    {{ form.cuatrimestre }}
+                                </td>
+
+                                <td>
+                                    {{ form.fecha }}
+                                </td>
+
+                                <td class="text-center">
+
+                                    <div style="display:none;">
+                                        {{ form.DELETE }}
+                                    </div>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="this.closest('tr').querySelector('input[type=checkbox]').click()">
+                                        🗑
+                                    </button>
+
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <!-- ================= INTENSIFICACION ================= -->
+                <h4 class="mb-3 text-primary border-bottom pb-2">
+                    Instancias de Intensificación
+                </h4>
+
+                {{ formsets.int.management_form }}
+
+                <div class="tabla-alumnos-contenedor mb-4" style="overflow-x:auto;">
+
+                    <table class="table-sae" style="width:100%; border-collapse:collapse;">
+
+                        <thead>
+                            <tr>
+                                <th class="text-center">Fecha</th>
+                                <th class="text-center">Nota</th>
+                                <th class="text-center">Borrar</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for form in formsets.int %}
+                            <tr>
+
+                                {{ form.id }}
+
+                                <td>{{ form.fecha }}</td>
+                                <td>{{ form.valor }}</td>
+
+                                <td class="text-center">
+
+                                    <div style="display:none;">
+                                        {{ form.DELETE }}
+                                    </div>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="this.closest('tr').querySelector('input[type=checkbox]').click()">
+                                        🗑
+                                    </button>
+
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <!-- ================= BOTONES ================= -->
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+
+                    <a href="{% url 'lista_calificaciones' %}" class="btn btn-light border">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-regular fa-floppy-disk me-2"></i>
+                        Guardar Calificaciones
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'usuarios/js/editar_calificaciones.js' %}"></script>
+{% endblock %}

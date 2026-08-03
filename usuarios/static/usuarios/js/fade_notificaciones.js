@@ -11,6 +11,6 @@ document.addEventListener("DOMContentLoaded", function() {
             setTimeout(function() {
                 alert.remove();
             }, 500);
-        }, 3000); // 3 segundos visible
+        }, 5000); // 3 segundos visible
     });
 });

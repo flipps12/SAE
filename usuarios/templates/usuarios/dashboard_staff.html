@@ -1,0 +1,61 @@
+{% extends "usuarios/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="center-text">
+        <div class="d-flex flex-column align-items-center">
+            <div class="animated-text" style="font-size: 6rem; line-height: 1;">SAE PBA</div>
+            <div class="text-muted text-uppercase mt-2" style="letter-spacing: 4px; font-weight: 500; font-size: 1.2rem; color: #4a9eff !important;">
+                Sistema de Administración Escolar PBA
+            </div>
+        </div>
+    </div>
+
+    <br><br><br>
+
+    <div id="statsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="10000" style="width: 80%; margin: auto; padding-bottom: 50px;">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <h4 class="text-center text-white mb-4">Estado de Trayectorias</h4>
+                <div style="height: 300px;"><canvas id="chartTrayectorias"></canvas></div>
+            </div>
+            <div class="carousel-item">
+                <h4 class="text-center text-white mb-4">Niveles de Ausentismo</h4>
+                <div style="height: 300px;"><canvas id="chartAusentismo"></canvas></div>
+            </div>
+            <div class="carousel-item">
+                <h4 class="text-center text-white mb-4">Promedios Académicos</h4>
+                <div style="height: 300px;"><canvas id="chartNotas"></canvas></div>
+            </div>
+            <div class="carousel-item">
+                <h4 class="text-center text-white mb-4">Distribución de Especialidades</h4>
+                <div style="height: 300px;"><canvas id="chartEspecialidades"></canvas></div>
+            </div>
+        </div>
+        
+        <button class="carousel-control-prev" type="button" data-bs-target="#statsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#statsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div id="datos-dashboard" 
+        data-trayectorias='{{ datos_dashboard.trayectorias }}'
+        data-ausentismo='{{ datos_dashboard.ausentismo }}'
+        data-notas='{{ datos_dashboard.notas }}'
+        data-esp-nombres='{{ datos_dashboard.especialidades_nombres }}'
+        data-esp-valores='{{ datos_dashboard.especialidades_valores }}'
+        style="display:none;">
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+
+<script src="{% static 'usuarios/js/home.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'usuarios/js/estadisticas_home.js' %}"></script>
+
+{% endblock %}

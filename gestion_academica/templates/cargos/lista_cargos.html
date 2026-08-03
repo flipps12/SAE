@@ -2,17 +2,25 @@
 
 {% block content %}
 <div class="container-fluid mt-4">
-   <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 text-white">Listado de Personal y Cargos Activos</h2>
-        <a href="{% url 'alta_cargos' %}" class="btn btn-success d-flex align-items-center gap-2">
-            <i class="fa-solid fa-id-card-clip"></i> Asignar Nuevo Cargo
-        </a>
-    </div>
+    <h2 class="mb-4 text-white">Listado de Personal y Cargos Activos</h2>
 
     <form method="GET" action="" class="row g-3 mb-4 p-3 card flex-row flex-wrap align-items-end">
-        <div class="col-md-11">
+        <div class="col-md-5">
             <label for="q" class="form-label fw-bold">Buscador General</label>
-            <input type="text" name="q" id="q" class="form-control" placeholder="Buscar por Nombre, Apellido, CUIL o Legajo..." value="{{ search_query|default:'' }}">
+            <input type="text" name="q" id="q" class="form-control"
+                placeholder="Buscar por Nombre, Apellido, CUIL o Legajo..." value="{{ search_query|default:'' }}">
+        </div>
+
+        <div class="col-md-3">
+            <label for="cargo" class="form-label fw-bold">Cargo</label>
+            <select name="cargo" id="cargo" class="form-select">
+                <option value="">Todos los cargos</option>
+                {% for c in cargos %}
+                <option value="{{ c.id }}" {% if c.es_seleccionado %}selected{% endif %}>
+                    {{ c.nombre }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
 
         <div class="col-md-1">
@@ -37,38 +45,39 @@
                     <td class="fw-bold">
                         {{ perfil.persona.cuil|slice:":2" }}-{{ perfil.persona.cuil|slice:"2:10" }}-{{ perfil.persona.cuil|slice:"10:" }}
                     </td>
-                    
                     <td>{{ perfil.persona.apellido }}, {{ perfil.persona.nombre }}</td>
-                    
                     <td>{{ perfil.persona.numero_legajo }}</td>
-                    
                     <td>
                         <ul class="mb-0 ps-3">
-                        {% for asignacion in perfil.asignaciones.all %}
+                            {% for asignacion in perfil.asignaciones.all %}
                             {% if asignacion.activo %}
-                                <li>
-                                    <strong>{{ asignacion.cargo.nombre }}</strong> 
-                                    {% if asignacion.resolucion %}
-                                        <span class="text-muted">(Res: {{ asignacion.resolucion }})</span>
-                                    {% endif %}
-                                </li>
+                            <li>
+                                <strong>{{ asignacion.cargo.nombre }}</strong>
+                                {% if asignacion.resolucion %}
+                                <span class="text-muted">(Res: {{ asignacion.resolucion }})</span>
+                                {% endif %}
+                            </li>
                             {% endif %}
-                        {% empty %}
+                            {% empty %}
                             <li class="text-danger list-unstyled">Sin cargos activos vigentes</li>
-                        {% endfor %}
+                            {% endfor %}
                         </ul>
                     </td>
-                    
                     <td class="text-center">
                         <div class="dropdown">
-                            <button class="btn btn-link text-light p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="box-shadow: none;">
+                            <button class="btn btn-link text-light p-0 border-0" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false" style="box-shadow: none;">
                                 <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
                             </button>
-                            
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
                                 <li>
-                                    <a class="dropdown-menu-item dropdown-item text-muted ps-3" href="#">
-                                        <i class="fa-solid fa-clock me-2 text-warning"></i> Próximamente...
+                                    <a class="dropdown-item" href="{% url 'detalle_personal' perfil.persona.pk %}">
+                                        <i class="fa-regular fa-eye me-2 text-info"></i> Ver Ficha
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'editar_personal' perfil.persona.pk %}">
+                                        <i class="fa-regular fa-pen-to-square me-2 text-warning"></i> Editar Personal
                                     </a>
                                 </li>
                             </ul>
@@ -78,12 +87,58 @@
                 {% empty %}
                 <tr>
                     <td colspan="5" class="text-center py-4 text-muted">
-                        No se encontró personal con cargos activos que coincidan con los criterios de búsqueda.
+                        No se encontró personal que coincida con los criterios de búsqueda.
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    {% if is_paginated %}
+    {% with params="&q="|add:search_query|default:""|add:"&cargo="|add:cargo_seleccionado|default:"" %}
+    <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination paginacion-sae shadow-sm rounded">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{{ params }}" title="Primera Página"><i
+                        class="fa-solid fa-angles-left"></i></a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{{ params }}"><i
+                        class="fa-solid fa-angle-left"></i></a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>
+            <li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %} <li class="page-item"><a
+                    class="page-link" href="?page={{ num }}{{ params }}">{{ num }}</a></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{{ params }}"><i
+                            class="fa-solid fa-angle-right"></i></a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{{ params }}"
+                        title="Última Página"><i class="fa-solid fa-angles-right"></i></a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+                </li>
+                <li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+                </li>
+                {% endif %}
+        </ul>
+    </nav>
+    {% endwith %}
+    {% endif %}
 </div>
 {% endblock %}

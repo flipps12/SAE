@@ -102,12 +102,12 @@
 
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
                                 <li>
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="{% url 'planilla_preceptor' %}?ciclo={{ inscripcion.ciclo_lectivo.id }}&curso={{ inscripcion.curso.id }}">
                                         <i class="fa-solid fa-calendar-check me-2 text-success"></i> Tomar Asistencia Hoy
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="{% url 'detalle_asistencias_alumno' inscripcion.alumno.id %}">
                                         <i class="fa-solid fa-eye me-2 text-info"></i> Ver Historial Diario
                                     </a>
                                 </li>
@@ -115,7 +115,7 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="{% url 'detalle_asistencias_alumno' inscripcion.alumno.id %}">
                                         <i class="fa-solid fa-file-signature me-2 text-warning"></i> Cargar Justificativo
                                     </a>
                                 </li>

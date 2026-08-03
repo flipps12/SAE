@@ -1,0 +1,194 @@
+{% extends "usuarios/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-4 text-white">Mis Dictados (Materias)</h2>
+
+        <a href="{% url 'home' %}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Volver al Inicio
+        </a>
+    </div>
+
+
+    <form method="get" class="row g-3 mb-4 p-3 card flex-row flex-wrap align-items-end">
+
+        <div class="col-md-4">
+            <label for="q" class="form-label fw-bold">Buscar</label>
+            <input type="text"
+                   id="q"
+                   name="q"
+                   value="{{ search }}"
+                   class="form-control"
+                   placeholder="Buscar materia o curso">
+        </div>
+
+        <div class="col-md-3">
+            <label for="curso" class="form-label fw-bold">Curso</label>
+
+            <select name="curso" id="curso" class="form-select">
+                <option value="">Todos los cursos</option>
+
+                {% for curso in cursos %}
+                <option value="{{ curso.id }}"
+                    {% if curso_selected == curso.id|stringformat:"s" %}selected{% endif %}>
+                    {{ curso }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="especialidad" class="form-label fw-bold">Especialidad</label>
+
+            <select name="especialidad" id="especialidad" class="form-select">
+                <option value="">Todas las especialidades</option>
+
+                {% for especialidad in especialidades %}
+                <option value="{{ especialidad.id }}"
+                    {% if especialidad_selected == especialidad.id|stringformat:"s" %}selected{% endif %}>
+                    {{ especialidad.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">
+                Filtrar
+            </button>
+        </div>
+
+    </form>
+
+    <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Materia</th>
+                    <th>Curso</th>
+                    <th>Especialidad</th>
+                    <th>Ciclo</th>
+                    <th>Grupo</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for d in dictados %}
+                <tr data-url="{% url 'dictado_alumnos' d.pk %}"
+                    class="fila-dictado"
+                    style="cursor:pointer;">
+
+                    <td>{{ d.materia.nombre }}</td>
+                    <td>{{ d.curso }}</td>
+                    <td>{{ d.curso.especialidad }}</td>
+                    <td>{{ d.ciclo_lectivo.anio }}</td>
+                    <td>{{ d.get_grupo_display }}</td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        No tienes dictados asignados
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+    {% with params="&q="|add:search|default:""|add:"&curso="|add:curso_selected|default:""|add:"&especialidad="|add:especialidad_selected|default:"" %}
+    <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination paginacion-sae shadow-sm rounded">
+
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page=1{{ params }}"
+                   title="Primera Página">
+                    <i class="fa-solid fa-angles-left"></i>
+                </a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.previous_page_number }}{{ params }}">
+                    <i class="fa-solid fa-angle-left"></i>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">
+                    <i class="fa-solid fa-angles-left"></i>
+                </span>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">
+                    <i class="fa-solid fa-angle-left"></i>
+                </span>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ num }}{{ params }}">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.next_page_number }}{{ params }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                </a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.paginator.num_pages }}{{ params }}"
+                   title="Última Página">
+                    <i class="fa-solid fa-angles-right"></i>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">
+                    <i class="fa-solid fa-angle-right"></i>
+                </span>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">
+                    <i class="fa-solid fa-angles-right"></i>
+                </span>
+            </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+    {% endwith %}
+    {% endif %}
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{% static 'usuarios/js/urls.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends "usuarios/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'usuarios/css/cruds.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 text-white">
+            Gestión de Cargos
+        </h2>
+
+        <a href="{% url 'home' %}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Volver a SAE
+        </a>
+    </div>
+
+    <div class="row">
+
+        <!-- ================= FORMULARIO ================= -->
+
+        <div class="col-lg-4">
+
+            <div class="card bg-dark border-secondary h-100">
+
+                <div class="card-header bg-secondary text-white">
+
+                    {% if editando %}
+                        Editar Cargo
+                    {% else %}
+                        Nuevo Cargo
+                    {% endif %}
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        {% if editando %}
+                            <input type="hidden" name="pk" value="{{ editando.pk }}">
+                        {% endif %}
+
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <div>{{ field.label }}: {{ error }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+
+                                {{ form.non_field_errors }}
+
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+
+                            <label class="form-label text-white">
+                                Nombre
+                            </label>
+
+                            {{ form.nombre }}
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label text-white">
+                                Descripción
+                            </label>
+
+                            {{ form.descripcion }}
+
+                        </div>
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                <i class="fa-solid fa-floppy-disk me-2"></i>
+
+                                {% if editando %}
+                                    Actualizar
+                                {% else %}
+                                    Guardar
+                                {% endif %}
+
+                            </button>
+
+                            {% if editando %}
+
+                                <a href="{% url 'gestion_tipo_cargo' %}"
+                                   class="btn btn-success">
+
+                                    <i class="fa-solid fa-plus me-2"></i>
+
+                                    Nuevo
+
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= LISTADO ================= -->
+
+        <div class="col-lg-8">
+
+            <div class="tabla-alumnos-contenedor tabla-crud-contenedor h-100">
+
+                <table class="table-sae tabla-crud">
+
+                    <thead>
+
+                        <tr>
+
+                            <th style="width:25%">Nombre</th>
+                            <th>Descripción</th>
+                            <th style="width:120px">Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for cargo in tipos %}
+
+                        <tr>
+
+                            <td>{{ cargo.nombre }}</td>
+
+                            <td>{{ cargo.descripcion|default:"-" }}</td>
+
+                            <td>
+
+                                <a href="?editar={{ cargo.pk }}"
+                                   class="btn btn-warning btn-sm">
+
+                                    <i class="fa-solid fa-pen"></i>
+
+                                </a>
+
+                                <form
+                                    method="POST"
+                                    style="display:inline;">
+
+                                    {% csrf_token %}
+
+                                    <input type="hidden"
+                                           name="pk"
+                                           value="{{ cargo.pk }}">
+
+                                    <input type="hidden"
+                                           name="accion"
+                                           value="eliminar">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminar"
+                                        data-id="{{ cargo.pk }}">
+                                        <i class="fa-regular fa-trash-can text-white"></i>
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="3" class="text-center">
+
+                                No existen tipos de cargo registrados.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= MODAL ================= -->
+
+
+<div class="modal fade" id="modalEliminar" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white border-secondary">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        ¿Seguro que querés eliminar este tipo de cargo?
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+
+        <form method="POST" id="formEliminar">
+          {% csrf_token %}
+          <input type="hidden" name="pk" id="pkEliminar">
+          <input type="hidden" name="accion" value="eliminar">
+
+          <button type="submit" class="btn btn-danger">
+            Eliminar
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+    <script src="{% static 'usuarios/js/cruds.js' %}"></script>
+{% endblock %}

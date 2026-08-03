@@ -7,7 +7,7 @@
             <i class="fa-solid fa-bullhorn text-warning me-2"></i>Tablón de Comunicados Institucionales
         </h2>
         
-        {% if request.user.user_type in 'PRECEPTOR JERARQUICOS CARGOS' %}
+        {% if request.user.is_staff or request.user.user_type != 'ALUMNO' %}
             <a href="{% url 'carga_comunicados' %}" class="btn btn-success btn-sm fw-bold">
                 <i class="fa-solid fa-pen-to-square me-1"></i> Publicar Anuncio
             </a>

@@ -4,9 +4,6 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0 text-white">Listado de Calificaciones</h2>
-        <a href="{% url 'planilla_docente' %}" class="btn btn-success d-flex align-items-center gap-2">
-            <i class="fa-solid fa-id-card-clip"></i> Planilla Docente
-        </a>
     </div>
 
     <form method="GET" action="" class="row g-3 mb-4 p-3 card flex-row flex-wrap align-items-end">
@@ -54,76 +51,119 @@
     <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
         <table class="table align-middle mb-0">
             <thead>
-                <tr>
-                    <th>CUIL Alumno</th>
-                    <th>Apellido y Nombre</th>
-                    <th>Curso / Materia</th>
-                    <th class="text-center">Notas de Proceso</th>
-                    <th class="text-center">Cierres (Etapas)</th>
-                    <th class="text-center">Intensificación</th>
+                <tr class="align-middle">
+                    <th style="min-width: 200px;">CUIL</th>
+                    <th style="min-width: 300px;">Nombre y Apellido</th>
+                    <th class="text-center">Curso / Materia</th>
+                    <th class="text-center">Notas 1er Cuatrimestre</th>
+                    <th class="text-center">Cierre 1er Cuatrimestre</th>
+                    <th class="text-center">Notas 2do Cuatrimestre</th>
+                    <th class="text-center">Cierre 2do Cuatrimestre</th>
+                    <th class="text-center">Dic</th>
+                    <th class="text-center">Feb</th>
+                    <th class="text-center">Final</th>
+                    <th class="text-center">Intensificaciones</th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {% for inscripcion in inscripciones %}
                 <tr>
-                    <td class="fw-bold">
+                    <td class="fw-bold text-nowrap">
                         {{ inscripcion.alumno.persona.cuil|slice:":2" }}-{{ inscripcion.alumno.persona.cuil|slice:"2:10" }}-{{ inscripcion.alumno.persona.cuil|slice:"10:" }}
                     </td>
                     
-                    <td>
-                        <a href="{% url 'detalle_calificaciones_alumno' inscripcion.alumno.id %}" class="text-decoration-none text-info fw-semibold-hover">
+                    <td class="text-nowrap">
+                        <a class="text-decoration-none text-info fw-semibold-hover">
                             {{ inscripcion.alumno.persona.apellido }}, {{ inscripcion.alumno.persona.nombre }}
                         </a>
-                        <div class="text-muted" style="font-size: 0.75rem;">Legajo: {{ inscripcion.alumno.persona.numero_legajo }}</div>
+                        <div class="text-muted small">Legajo: {{ inscripcion.alumno.persona.numero_legajo }}</div>
                     </td>
                     
-                    <td>
+                    <td class="text-nowrap">
                         <span class="badge bg-dark">{{ inscripcion.dictado.curso.nivel }}° {{ inscripcion.dictado.curso.division }}ª</span>
-                        <div class="fw-semibold text-light mt-1" style="font-size: 0.85rem;">{{ inscripcion.dictado.materia.nombre }}</div>
+                        <div class="fw-semibold text-light mt-1 small">{{ inscripcion.dictado.materia.nombre }}</div>
                     </td>
                     
                     <td class="text-center">
-                        <div class="d-flex flex-wrap gap-1 justify-content-center">
-                            {% for nota in inscripcion.dictado.notas_actividades.all %}
-                                {% if nota.alumno_id == inscripcion.alumno_id %}
-                                    <span class="badge bg-secondary p-2" title="{{ nota.nombre_actividad }} (C{{ nota.cuatrimestre }} - {{ nota.fecha|date:'d/m' }})">
-                                        {{ nota.valor }}
-                                    </span>
-                                {% endif %}
-                            {% empty %}
-                                <span class="text-muted small">-</span>
-                            {% endfor %}
-                        </div>
+                        {% for nota in inscripcion.dictado.notas_actividades.all %}
+                            {% if nota.alumno_id == inscripcion.alumno_id and nota.cuatrimestre == 1 %}
+                                <span class="badge bg-secondary">{{ nota.valor }}</span>
+                            {% endif %}
+                        {% endfor %}
                     </td>
                     
                     <td class="text-center">
-                        <div class="text-start d-inline-block" style="font-size: 0.85rem;">
-                            {% for nota_etapa in inscripcion.dictado.notas_etapas.all %}
-                                {% if nota_etapa.alumno_id == inscripcion.alumno_id %}
-                                    <div>
-                                        <span class="text-info fw-bold">{{ nota_etapa.etapa }}:</span> 
-                                        <span class="fw-bold">{{ nota_etapa.valor_numerico }}</span>
-                                        {% if nota_etapa.valor_conceptual %}
-                                            <span class="text-warning small">({{ nota_etapa.valor_conceptual }})</span>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            {% empty %}
-                                <span class="text-muted small">Sin cierres</span>
-                            {% endfor %}
-                        </div>
+                        {% for n in inscripcion.dictado.notas_etapas.all %}
+                            {% if n.alumno_id == inscripcion.alumno_id and n.etapa == '1C' %}
+                                {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td class="text-center">
+                        {% for nota in inscripcion.dictado.notas_actividades.all %}
+                            {% if nota.alumno_id == inscripcion.alumno_id and nota.cuatrimestre == 2 %}
+                                <span class="badge bg-secondary">{{ nota.valor }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td class="text-center">
+                        {% for n in inscripcion.dictado.notas_etapas.all %}
+                            {% if n.alumno_id == inscripcion.alumno_id and n.etapa == '2C' %}
+                                {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    
+                    <td class="text-center">
+                        {% for n in inscripcion.dictado.notas_etapas.all %}
+                            {% if n.alumno_id == inscripcion.alumno_id and n.etapa == 'DIC' %}
+                                {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td class="text-center">
+                        {% for n in inscripcion.dictado.notas_etapas.all %}
+                            {% if n.alumno_id == inscripcion.alumno_id and n.etapa == 'FEB' %}
+                                {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td class="text-center">
+                        {% for n in inscripcion.dictado.notas_etapas.all %}
+                            {% if n.alumno_id == inscripcion.alumno_id and n.etapa == 'FINAL' %}
+                                {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                            {% endif %}
+                        {% endfor %}
                     </td>
                     
                     <td class="text-center">
                         {% for inte in inscripcion.dictado.intensificaciones.all %}
                             {% if inte.alumno_id == inscripcion.alumno_id %}
-                                <span class="badge bg-danger" title="Fecha: {{ inte.fecha|date:'d/m/Y' }}">
-                                    {{ inte.valor }}
-                                </span>
+                                {% if inte.valor == 0 %}<span class="badge bg-dark">0</span>
+                                {% elif inte.valor <= 3 %}<span class="badge bg-danger">{{ inte.valor }}</span>
+                                {% elif inte.valor <= 6 %}<span class="badge bg-success">{{ inte.valor }}</span>
+                                {% else %}<span class="badge bg-primary">{{ inte.valor }}</span>{% endif %}
                             {% endif %}
-                        {% empty %}
-                            <span class="text-muted small">-</span>
                         {% endfor %}
                     </td>
                     
@@ -132,23 +172,12 @@
                             <button class="btn btn-link text-light p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="box-shadow: none;">
                                 <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
                             </button>
-                            
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="fa-solid fa-pen-to-square me-2 text-info"></i> Modificar Notas
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="fa-solid fa-file-pdf me-2 text-danger"></i> Exportar Boletín
-                                    </a>
-                                </li>
+                                <li><a class="dropdown-item" href="{% url 'editar_calificaciones' inscripcion.dictado.id inscripcion.alumno.id %}"><i class="fa-solid fa-pen-to-square me-2 text-info"></i> Modificar Notas</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <!-- Enlace modificado para redirigir a la vista detallada por Alumno -->
                                     <a class="dropdown-item" href="{% url 'detalle_calificaciones_alumno' inscripcion.alumno.id %}">
-                                        <i class="fa-solid fa-clock me-2 text-warning"></i> Historial Completo
+                                        <i class="fa-solid fa-clock me-2 text-warning"></i> Ver todas las Materias
                                     </a>
                                 </li>
                             </ul>
@@ -157,7 +186,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">
+                    <td colspan="12" class="text-center py-4 text-muted">
                         No se encontraron registros de calificaciones con los criterios seleccionados.
                     </td>
                 </tr>

@@ -1,0 +1,102 @@
+/* ==========================================================
+   CONTENEDOR DE TABLAS
+   ========================================================== */
+
+.tabla-alumnos-contenedor {
+    width: 100%;
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #111;
+    border: 1px solid #4a4a4a;
+    margin-top: 0;
+}
+
+/* ==========================================================
+   TABLAS CRUD
+   ========================================================== */
+
+.table-sae {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    color: #e0e0e0;
+    font-size: 0.85rem;
+}
+
+.table-sae thead th,
+.table-sae td {
+    padding: 10px 15px;
+    border: 1px solid #333;
+    vertical-align: middle;
+}
+
+.table-sae thead th {
+    position: sticky;
+    top: 0;
+    background: #000;
+    color: #4a9eff;
+    z-index: 10;
+}
+
+/* ==========================================================
+   ANCHOS DE COLUMNAS
+   ========================================================== */
+
+.tabla-crud th:nth-child(1),
+.tabla-crud td:nth-child(1){
+    width: 30%;
+}
+
+.tabla-crud th:nth-child(2),
+.tabla-crud td:nth-child(2){
+    width: auto;
+    word-break: break-word;
+}
+
+.tabla-crud th:nth-child(3),
+.tabla-crud td:nth-child(3){
+    width: 120px;
+    text-align: center;
+}
+
+/* ==========================================================
+   FORMULARIOS
+   ========================================================== */
+
+.card{
+    margin-top:0;
+}
+
+.card-body label{
+    color:#fff;
+}
+
+.card-body input,
+.card-body textarea,
+.card-body select{
+    background:#2b2b2b;
+    color:#fff;
+    border:1px solid #555;
+}
+
+.card-body input:focus,
+.card-body textarea:focus,
+.card-body select:focus{
+    background:#2b2b2b;
+    color:#fff;
+    border-color:#4a9eff;
+    box-shadow:none;
+}
+
+/* ==========================================================
+   BOTONES
+   ========================================================== */
+
+.btn-sm{
+    min-width:38px;
+}
+
+.btn-outline-danger i {
+    color: white !important;
+}

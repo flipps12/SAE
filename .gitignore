@@ -4,13 +4,14 @@ __pycache__/
 
 # Base de datos local
 db.sqlite3
-*.xlsx                                               
 
 # Entornos virtuales
 venv/
 .venv/
 env/
-.env 
 
 # VS Code
 .vscode/
+
+# Copia del fork de referencia (fuente de features integradas)
+backup/

@@ -9,6 +9,7 @@ from django.db import IntegrityError
 
 from datetime import date
 import random
+from decimal import Decimal, InvalidOperation
 
 from django.forms import modelformset_factory
 
@@ -20,11 +21,19 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import TIPO_ETAPA_CHOICES
 
-from .models import Persona, Alumno, Curso, CicloLectivo, HistorialAcademico, Especialidad, InscripcionDictado, Dictado, Profesor, PersonalCargo, TipoCargo, NotaActividad, Intensificacion, NotaEtapa, Materia, Turno, Aula, Burbuja, Asistencia, Comunicado
+from .models import Persona, Alumno, Curso, CicloLectivo, HistorialAcademico, Especialidad, InscripcionDictado, Dictado, Profesor, PersonalCargo, TipoCargo, NotaActividad, Intensificacion, NotaEtapa, Materia, Turno, Aula, Burbuja, Asistencia, Comunicado, Preceptor, AsignacionPreceptor
 
 from .forms import AlumnoForm, PersonaForm, ImportarProfesoresForm,ProfesorUpdateForm, DictadoFormSet, HorarioFormSet, AsignacionCargoFormSet, TipoCargoForm, EspecialidadForm, CursoForm, MateriaForm, TurnoForm, AulaForm, BurbujaForm, CicloLectivoForm, AlumnoFormSet, ComunicadoForm, AltaPersonalCargoForm
 
 User = get_user_model()
+
+
+def _valor_decimal(value):
+    value = str(value).strip().replace(',', '.')
+    try:
+        return Decimal(value)
+    except (InvalidOperation, ValueError):
+        return None
 
 
 # --------------------------------------------------------------------------------------
@@ -605,6 +614,28 @@ class CrearAlumnoView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
                     )
                     for d in dictados
                 ])
+
+                if not AsignacionPreceptor.objects.filter(
+                    curso=curso, ciclo_lectivo=ciclo_activo
+                ).exists():
+                    preceptor = (
+                        Preceptor.objects
+                        .exclude(asignaciones__ciclo_lectivo=ciclo_activo)
+                        .first()
+                    )
+                    if not preceptor:
+                        preceptor = (
+                            Preceptor.objects
+                            .annotate(n=Count('asignaciones'))
+                            .order_by('n', 'id')
+                            .first()
+                        )
+                    if preceptor:
+                        AsignacionPreceptor.objects.create(
+                            preceptor=preceptor,
+                            curso=curso,
+                            ciclo_lectivo=ciclo_activo,
+                        )
 
             messages.success(request, "Alumno creado correctamente.")
             return redirect(self.success_url)
@@ -2779,49 +2810,62 @@ class PlanillaCargaNotasView(LoginRequiredMixin, TemplateView):
                     continue
 
                 if key.startswith('nota_existente_'):
-                    NotaActividad.objects.filter(id=key.replace('nota_existente_', '')).update(valor=int(value))
+                    valor = _valor_decimal(value)
+                    if valor is not None:
+                        NotaActividad.objects.filter(id=key.replace('nota_existente_', '')).update(valor=valor)
 
                 elif key.startswith('nota_nueva_celda_'):
                     info = key.replace('nota_nueva_celda_', '').split('__act__')
                     alumno_id, act_nombre = info[0], info[1].replace('_', ' ')
                     act_prev = NotaActividad.objects.filter(dictado_id=dictado_id, nombre_actividad=act_nombre).first()
-                    NotaActividad.objects.create(
-                        dictado_id=dictado_id, alumno_id=alumno_id, nombre_actividad=act_nombre,
-                        cuatrimestre=act_prev.cuatrimestre if act_prev else 1, valor=int(value),
-                        fecha=act_prev.fecha if act_prev else date.today()
-                    )
+                    valor = _valor_decimal(value)
+                    if valor is not None:
+                        NotaActividad.objects.create(
+                            dictado_id=dictado_id, alumno_id=alumno_id, nombre_actividad=act_nombre,
+                            cuatrimestre=act_prev.cuatrimestre if act_prev else 1, valor=valor,
+                            fecha=act_prev.fecha if act_prev else date.today()
+                        )
 
                 elif key.startswith('etapa_existente_'):
-                    NotaEtapa.objects.filter(id=key.replace('etapa_existente_', '')).update(valor_numerico=int(value))
+                    valor = _valor_decimal(value)
+                    if valor is not None:
+                        NotaEtapa.objects.filter(id=key.replace('etapa_existente_', '')).update(valor_numerico=valor)
 
                 elif key.startswith('etapa_nueva_celda_'):
                     info = key.replace('etapa_nueva_celda_', '').split('__etapa__')
-                    NotaEtapa.objects.create(dictado_id=dictado_id, alumno_id=info[0], etapa=info[1].replace('_', ' '), valor_numerico=int(value))
+                    valor = _valor_decimal(value)
+                    if valor is not None:
+                        NotaEtapa.objects.create(dictado_id=dictado_id, alumno_id=info[0], etapa=info[1].replace('_', ' '), valor_numerico=valor)
 
                 elif key.startswith('intensificacion_existente_'):
                     inte_id = key.replace('intensificacion_existente_', '')
-                    Intensificacion.objects.filter(id=inte_id).update(valor=float(value))
+                    valor = _valor_decimal(value)
+                    if valor is not None:
+                        Intensificacion.objects.filter(id=inte_id).update(valor=valor)
 
                 elif key.startswith('intensificacion_nueva_celda_'):
                     info = key.replace('intensificacion_nueva_celda_', '').split('__inte__')
                     alumno_id = info[0]
                     fecha_columna = parse_date(info[1].split('__idx__')[0])
-
-                    Intensificacion.objects.create(
-                        dictado_id=dictado_id, alumno_id=alumno_id,
-                        valor=float(value), fecha=fecha_columna
-                    )
+                    valor = _valor_decimal(value)
+                    if valor is not None:
+                        Intensificacion.objects.create(
+                            dictado_id=dictado_id, alumno_id=alumno_id,
+                            valor=valor, fecha=fecha_columna
+                        )
 
             if nueva_actividad_nombre and nueva_actividad_nombre.strip():
                 nombre_limpio = nueva_actividad_nombre.strip()
                 fecha_carga = parse_date(request.POST.get('nueva_fecha_actividad')) or date.today()
                 for k, val in request.POST.items():
                     if k.startswith('nueva_nota_alumno_') and val.strip() != '':
-                        NotaActividad.objects.create(
-                            dictado_id=dictado_id, alumno_id=k.replace('nueva_nota_alumno_', ''),
-                            nombre_actividad=nombre_limpio, cuatrimestre=int(nuevo_cuatrimestre),
-                            valor=int(val), fecha=fecha_carga
-                        )
+                        valor = _valor_decimal(val)
+                        if valor is not None:
+                            NotaActividad.objects.create(
+                                dictado_id=dictado_id, alumno_id=k.replace('nueva_nota_alumno_', ''),
+                                nombre_actividad=nombre_limpio, cuatrimestre=int(nuevo_cuatrimestre),
+                                valor=valor, fecha=fecha_carga
+                            )
 
             if nueva_fecha_intensificacion_str:
                 fecha_int_nueva = parse_date(nueva_fecha_intensificacion_str)
@@ -2830,13 +2874,15 @@ class PlanillaCargaNotasView(LoginRequiredMixin, TemplateView):
                     for k, val in request.POST.items():
                         if k.startswith('nueva_intensificacion_alumno_') and val.strip() != '':
                             alumno_id = k.replace('nueva_intensificacion_alumno_', '')
-                            Intensificacion.objects.create(
-                                dictado_id=dictado_id,
-                                alumno_id=alumno_id,
-                                valor=float(val),
-                                fecha=fecha_int_nueva
-                            )
-                            contador_altas += 1
+                            valor = _valor_decimal(val)
+                            if valor is not None:
+                                Intensificacion.objects.create(
+                                    dictado_id=dictado_id,
+                                    alumno_id=alumno_id,
+                                    valor=valor,
+                                    fecha=fecha_int_nueva
+                                )
+                                contador_altas += 1
                     if contador_altas > 0:
                         messages.success(request, f"Nueva columna de intensificación registrada para el día {fecha_int_nueva.strftime('%d/%m/%Y')}.")
 

@@ -1,0 +1,136 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white mb-0">Historial Académico de Calificaciones</h2>
+        <a href="{% url 'lista_calificaciones' %}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Volver al Listado
+        </a>
+    </div>
+
+    {% for anio, datos in historial_agrupado.items %}
+        <div class="mb-5">
+            <div class="d-flex align-items-center mb-3">
+                <h3 class="text-warning mb-0 me-3">Ciclo Lectivo {{ anio }}</h3>
+                <span class="badge bg-secondary fs-6">{{ datos.curso }}</span>
+            </div>
+
+            <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr class="align-middle">
+                            <th style="width: 20%;">Materia</th>
+                            <th class="text-center" style="width: 12%;">Act. 1er Cuatrimestre</th>
+                            <th class="text-center" style="width: 8%;">Nota 1er Cuatrimestre</th>
+                            <th class="text-center" style="width: 12%;">Act. 2do Cuatrimestre</th>
+                            <th class="text-center" style="width: 8%;">Nota 2do Cuatrimestre</th>
+                            <th class="text-center" style="width: 8%;">Nota Final</th>
+                            <th class="text-center" style="width: 8%;">Diciembre</th>
+                            <th class="text-center" style="width: 8%;">Febrero</th>
+                            <th class="text-center" style="width: 16%;">Intensificaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inscripcion in datos.inscripciones %}
+                        <tr>
+                            <td class="text-nowrap">
+                                <div class="fw-bold text-light">{{ inscripcion.dictado.materia.nombre }}</div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="text-muted small">{{ inscripcion.dictado.curso }}</div>
+                                    {% if inscripcion.condicion == 'RECURSANTE' %}
+                                        <span class="badge rounded-pill bg-warning text-dark" style="font-size: 0.60rem;">Rec.</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <td class="text-center">
+                                {% for nota in inscripcion.dictado.notas_actividades.all %}
+                                    {% if nota.alumno_id == alumno.id and nota.cuatrimestre == 1 %}
+                                        <span class="badge bg-secondary">{{ nota.valor }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+
+                            <td class="text-center">
+                                {% for n in inscripcion.dictado.notas_etapas.all %}
+                                    {% if n.alumno_id == alumno.id and n.etapa == '1C' %}
+                                        {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                        {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                        {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                        {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            
+                            <td class="text-center">
+                                {% for nota in inscripcion.dictado.notas_actividades.all %}
+                                    {% if nota.alumno_id == alumno.id and nota.cuatrimestre == 2 %}
+                                        <span class="badge bg-secondary">{{ nota.valor }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+
+                            <td class="text-center">
+                                {% for n in inscripcion.dictado.notas_etapas.all %}
+                                    {% if n.alumno_id == alumno.id and n.etapa == '2C' %}
+                                        {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                        {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                        {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                        {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+
+                            <td class="text-center">
+                                {% for n in inscripcion.dictado.notas_etapas.all %}
+                                    {% if n.alumno_id == alumno.id and n.etapa == 'FINAL' %}
+                                        {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                        {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                        {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                        {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+
+                            <td class="text-center">
+                                {% for n in inscripcion.dictado.notas_etapas.all %}
+                                    {% if n.alumno_id == alumno.id and n.etapa == 'DIC' %}
+                                        {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                        {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                        {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                        {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+
+                            <td class="text-center">
+                                {% for n in inscripcion.dictado.notas_etapas.all %}
+                                    {% if n.alumno_id == alumno.id and n.etapa == 'FEB' %}
+                                        {% if n.valor_numerico == 0 %}<span class="badge bg-dark">0</span>
+                                        {% elif n.valor_numerico <= 3 %}<span class="badge bg-danger">{{ n.valor_numerico }}</span>
+                                        {% elif n.valor_numerico <= 6 %}<span class="badge bg-success">{{ n.valor_numerico }}</span>
+                                        {% else %}<span class="badge bg-primary">{{ n.valor_numerico }}</span>{% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+
+                            <td class="text-center">
+                                {% for inte in inscripcion.dictado.intensificaciones.all %}
+                                    {% if inte.alumno_id == alumno.id %}
+                                        {% if inte.valor == 0 %}<span class="badge bg-dark">0</span>
+                                        {% elif inte.valor <= 3 %}<span class="badge bg-danger">{{ inte.valor }}</span>
+                                        {% elif inte.valor <= 6 %}<span class="badge bg-success">{{ inte.valor }}</span>
+                                        {% else %}<span class="badge bg-primary">{{ inte.valor }}</span>{% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        
+        <div>
+            <h2 class="mb-2 text-white">{{ dictado.materia.nombre }}</h2>
+
+            <p class="text-white mb-4">
+                {{ dictado.curso }} -
+                {{ dictado.get_grupo_display }}
+            </p>
+        </div>
+
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left me-2"></i>Volver al Inicio
+            </a>
+    </div>
+
+
+    <div class="table-responsive rounded shadow-sm tabla-alumnos-contenedor">
+        <table class="table align-middle mb-0">
+
+            <thead>
+                <tr>
+                    <th>Legajo</th>
+                    <th>Apellido</th>
+                    <th>Nombre</th>
+                    <th>Condición</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for i in inscripciones %}
+
+                <tr class="fila-alumno"
+                    data-url="{% url 'profesor_editar_calificaciones' dictado.pk i.alumno.pk %}">
+
+                    <td>{{ i.alumno.persona.numero_legajo }}</td>
+                    <td>{{ i.alumno.persona.apellido }}</td>
+                    <td>{{ i.alumno.persona.nombre }}</td>
+                    <td>{{ i.get_condicion_display }}</td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-muted">
+                        No hay alumnos inscriptos.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".fila-alumno").forEach(function (fila) {
+        fila.style.cursor = "pointer";
+
+        fila.addEventListener("click", function () {
+            window.location.href = this.dataset.url;
+        });
+    });
+});
+</script>
+
+{% endblock %}

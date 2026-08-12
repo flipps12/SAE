@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Base de datos local
+db.sqlite3
+
+# Archivos de datos (planillas de importación)
+*.xlsx
+
+# Variables de entorno
+.env
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# VS Code
+.vscode/
+
+# Copia del fork de referencia (fuente de features integradas)
+backup/

@@ -1,0 +1,137 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4 text-dark" style="max-width: 1000px;">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+        <h2 class="mb-0 text-white" style="min-width: 0; flex: 1;">
+            Crear Alumno
+            {% if ciclo_activo %}
+                <span class="badge bg-secondary fs-6 ms-2">Ciclo {{ ciclo_activo.anio }}</span>
+            {% endif %}
+        </h2>
+
+        <a href="{% url 'listado_alumnos' %}" class="btn btn-secondary text-nowrap flex-shrink-0">
+            <i class="fa-solid fa-arrow-left me-2"></i>Volver al Listado
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm border-0 bg-white text-dark mb-5">
+        <div class="card-body p-4">
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- PERSONA -->
+                <h4 class="mb-3 text-primary border-bottom pb-2">Datos Personales</h4>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-secondary">Apellido</label>
+                        {{ persona_form.apellido }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-secondary">Nombre</label>
+                        {{ persona_form.nombre }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary">DNI</label>
+                        {{ persona_form.dni }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary">CUIL</label>
+                        {{ persona_form.cuil }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary">Número de Legajo</label>
+                        {{ persona_form.numero_legajo }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-secondary">Fecha de Nacimiento</label>
+                        {{ persona_form.fecha_nacimiento }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-secondary">Fecha de Ingreso</label>
+                        {{ persona_form.fecha_ingreso }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-secondary">Email</label>
+                        {{ persona_form.email }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-secondary">Teléfono</label>
+                        {{ persona_form.telefono }}
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold text-secondary">Domicilio</label>
+                        {{ persona_form.domicilio }}
+                    </div>
+                </div>
+
+                <!-- ALUMNO -->
+                <h4 class="mb-3 text-primary border-bottom pb-2">Datos Académicos</h4>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-secondary">Curso</label>
+                        {{ form.curso }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-secondary">Grupo Taller</label>
+                        {{ form.grupo_taller }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-secondary">Burbuja</label>
+                        {{ form.burbuja }}
+                    </div>
+                </div>
+
+                <!-- REGISTRO -->
+                <h4 class="mb-3 text-primary border-bottom pb-2">Datos de Registro Histórico</h4>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary">Libro</label>
+                        {{ form.libro }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary">Folio</label>
+                        {{ form.folio }}
+                    </div>
+                </div>
+
+                <!-- CICLO -->
+                {% if ciclo_activo %}
+                    <div class="alert alert-info">
+                        Ciclo activo: <strong>{{ ciclo_activo.anio }}</strong><br>
+                        Las materias se asignarán automáticamente al guardar.
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger">
+                        No hay ciclo lectivo activo.
+                    </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a href="{% url 'listado_alumnos' %}" class="btn btn-light border">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-regular fa-floppy-disk me-2"></i>Crear Alumno
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

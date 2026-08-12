@@ -1,0 +1,97 @@
+/* --- Contenedores de botones en celdas --- */
+.btn-contenedor-marcador {
+    position: relative !important;
+    display: inline-block !important;
+    width: 38px;
+    height: 32px;
+    vertical-align: middle;
+    z-index: 1 !important;
+}
+
+.btn-materias-limpio {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* --- Iconos y Badges --- */
+.icono-libro-profesor {
+    color: #e2e8f0 !important;
+    display: inline-block;
+    opacity: 0.85;
+}
+
+.indicador-flotante-numero {
+    position: absolute !important;
+    top: -6px !important;
+    right: -4px !important;
+    font-size: 0.68rem !important;
+    padding: 0.25em 0.5em !important;
+    font-weight: 700 !important;
+    z-index: 2 !important; 
+    line-height: 1 !important;
+}
+
+/* --- Dropdown y Acciones --- */
+.btn-acciones-dropdown {
+    box-shadow: none !important;
+}
+
+/* Reducimos el z-index para que no pelee con el modal */
+.dropdown {
+    position: relative;
+    z-index: 10 !important; 
+}
+
+.dropdown-menu {
+    z-index: 11 !important;
+}
+
+/* --- Modal, Tablas y Estructura Superior --- */
+
+/* Forzamos que el modal esté siempre por encima de cualquier otra capa */
+.modal {
+    z-index: 2000 !important;
+}
+
+.modal-backdrop {
+    z-index: 1999 !important;
+}
+
+.modal-content {
+    background-color: #212529 !important; /* Opaco total para que no moleste lo de atrás */
+}
+
+.modal-sae-maximo {
+    max-width: 98% !important;
+}
+
+.tabla-modal-fuente {
+    font-size: 0.9rem !important;
+}
+
+.tabla-celda-materia {
+    min-width: 150px !important;
+}
+
+.tabla-celda-especialidad {
+    max-width: 150px !important;
+}
+
+.tabla-celda-horario {
+    font-size: 0.8rem !important;
+}
+/* Limpieza radical para la celda de horarios */
+.tabla-sae td:has(.horario-row), 
+.horario-row {
+    text-decoration: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+    background-color: transparent !important;
+    outline: none !important;
+    text-shadow: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+}

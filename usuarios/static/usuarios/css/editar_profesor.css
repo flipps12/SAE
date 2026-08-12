@@ -1,0 +1,97 @@
+/* --- Estilos Generales --- */
+.form-editar-profesor { 
+    background-color: #1a1a1a; 
+    border: 1px solid #4a4a4a; 
+    border-radius: 8px; 
+    padding: 20px; 
+    color: #fff; 
+}
+
+/* --- Contenedor Tabla --- */
+.tabla-alumnos-contenedor {
+    width: 100%;
+    max-height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
+    background-color: #111;
+    border: 1px solid #4a4a4a;
+    margin-top: 10px;
+}
+
+.table-sae {
+    width: max-content;
+    border-collapse: collapse;
+    color: #e0e0e0;
+    font-size: 0.80rem;
+}
+
+/* Encabezados y Celdas */
+.table-sae thead th, .table-sae td {
+    padding: 10px 15px;
+    border: 1px solid #333;
+    white-space: nowrap;
+}
+
+.table-sae thead th {
+    position: sticky;
+    top: 0;
+    background-color: #000 !important;
+    color: #4a9eff !important;
+    z-index: 10;
+}
+
+/* --- Inputs dentro de tabla --- */
+.table-sae td input, 
+.table-sae td select {
+    background-color: #2b2b2b !important;
+    border: 1px solid #555 !important;
+    color: white !important;
+    padding: 6px;
+    border-radius: 3px;
+    width: 100%;
+    min-width: 130px;
+}
+
+/* --- Layout de Horarios --- */
+.horario-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+    min-width: 450px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 4px;
+}
+
+.horario-row select, 
+.horario-row input {
+    height: 34px !important;
+    font-size: 0.8rem !important;
+}
+
+/* Ajustes específicos de campos en Horarios */
+.horario-row select[name$="-dia_semana"] { width: 100px !important; flex: 0 0 auto; }
+.horario-row input[name$="-horario_inicio"], 
+.horario-row input[name$="-horario_fin"] { width: 90px !important; flex: 0 0 auto; }
+
+.horario-row select[name$="-aula"] {
+    flex: 1;
+    min-width: 180px !important;
+}
+
+/* --- Botón Borrar --- */
+.text-danger {
+    color: #ff4d4d !important;
+    font-size: 1.2rem;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 0 5px;
+}
+
+/* Ajustes de ancho de columnas */
+.table-sae th:nth-child(1), 
+.table-sae td:nth-child(1) { min-width: 350px !important; }
+
+.table-sae th:nth-child(11), 
+.table-sae td:nth-child(11) { min-width: 250px !important; }

@@ -1,0 +1,335 @@
+
+body {
+    background-color: #1a1a1a;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    overflow-y: auto;
+}
+
+.navbar {
+    background-color: #0d0d0d !important;
+}
+
+.center-text {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 5rem;
+    font-weight: bold;
+    position: relative;
+    z-index: 1;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+}
+
+.dropdown-menu {
+    background-color: #2d2d2d;
+}
+
+.dropdown-item {
+    color: white;
+}
+
+.dropdown-item:hover {
+    background-color: #4a9eff;
+    color: white;
+}
+
+.animated-text {
+    font-size: 6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #4a9eff, #6b4eff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: subtlePulse 3s ease-in-out infinite, subtleFloat 4s ease-in-out infinite;
+    text-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+    letter-spacing: 2px;
+}
+
+@keyframes subtlePulse {
+    0%, 100% {
+        opacity: 0.9;
+        text-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+    }
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 35px rgba(74, 158, 255, 0.5);
+    }
+}
+
+@keyframes subtleFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+#particles-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.btn-login-modern {
+    background: #2a2a2a;
+    border: 1px solid #4a4a4a;
+    padding: 8px 24px;
+    border-radius: 20px;
+    color: #e0e0e0;
+    font-weight: 400;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-login-modern:hover {
+    background: #3a3a3a;
+    border-color: #5a5a5a;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-user-modern {
+    background: #2a2a2a;
+    border: 1px solid #4a4a4a;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #e0e0e0;
+    font-weight: 400;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-user-modern:hover {
+    background: #3a3a3a;
+    border-color: #5a5a5a;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.user-initials {
+    width: 28px;
+    height: 28px;
+    background-color: #4a4a4a;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* Campos de Formulario Universales (Modo Oscuro) */
+.form-control, input:not([type="submit"]), select, textarea {
+    background-color: #2a2a2a !important;
+    border: 1px solid #4a4a4a !important;
+    color: white !important;
+}
+
+.form-control:focus, input:focus, select:focus, textarea:focus {
+    background-color: #333 !important;
+    border-color: #4a9eff !important;
+    color: white !important;
+    outline: none !important;
+}
+
+/* Tarjetas */
+.card {
+    background-color: #1a1a1a !important;
+    border: 1px solid #4a4a4a !important;
+}
+
+.card-header {
+    background-color: #0d0d0d !important;
+    border-bottom: 1px solid #4a4a4a !important;
+    color: white !important;
+}
+
+label {
+    color: #e0e0e0 !important;
+}
+
+.alert {
+    background-color: #2a2a2a !important;
+    border-color: #4a4a4a !important;
+    color: white !important;
+}
+
+/* Botones Base */
+.btn-primary, .btn-warning {
+    background-color: #2a2a2a !important;
+    border: 1px solid #4a4a4a !important;
+    color: #e0e0e0 !important;
+}
+
+.btn-primary:hover, .btn-warning:hover {
+    background-color: #3a3a3a !important;
+    border-color: #5a5a5a !important;
+    color: white !important;
+}
+
+form.row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Color personalizado para la insignia del curso */
+.badge-curso-sae {
+    background-color: #4a9eff !important;
+    color: #0d0d0d !important;
+    font-weight: 600;
+}
+
+body:has(#particles-canvas) {
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* ====== ESTILOS PARA TABLAS Y LISTADOS (MODO OSCURO COHERENTE) ====== */
+
+.tabla-alumnos-contenedor {
+    max-height: 60vh;
+    overflow-y: auto;
+    background-color: #111111 !important; 
+    border: 1px solid #4a4a4a !important;
+}
+
+/* Forzar que las tablas hereden el texto blanco y fondo oscuro */
+.tabla-alumnos-contenedor table {
+    background-color: #111111 !important;
+    color: #ffffff !important;
+}
+
+.tabla-alumnos-contenedor table th {
+    background-color: #0d0d0d !important;
+    color: #4a9eff !important; /* Títulos de la tabla con el azul de SAE */
+    border-bottom: 2px solid #4a4a4a !important;
+    font-weight: 600;
+}
+
+.tabla-alumnos-contenedor table td {
+    background-color: #111111 !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #2d2d2d !important;
+}
+
+/* Efecto hover sobre las filas de la tabla */
+.tabla-alumnos-contenedor table tr:hover td {
+    background-color: #1d1d1d !important; /* Un gris sutil al pasar el mouse */
+    color: #ffffff !important;
+}
+
+/* Pantalla de carga */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(13, 13, 13, 0.9) !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+#loading-overlay .spinner-border {
+    border-color: transparent !important;
+    border-top-color: #4a9eff !important;
+}
+
+/* Estilos personalizados para la paginación de SAE26 */
+.paginacion-sae .page-link {
+    background-color: #2a2a2a !important;
+    border: 1px solid #4a4a4a !important;
+    color: #e0e0e0 !important;
+    transition: all 0.2s ease;
+    padding: 8px 16px;
+}
+
+.paginacion-sae .page-link:hover {
+    background-color: #3a3a3a !important;
+    border-color: #5a5a5a !important;
+    color: white !important;
+}
+
+.paginacion-sae .page-item.active .page-link {
+    background-color: #4a9eff !important;
+    border-color: #4a9eff !important;
+    color: #0d0d0d !important;
+    font-weight: bold;
+}
+
+.paginacion-sae .page-item.disabled .page-link {
+    background-color: #1a1a1a !important;
+    border-color: #333333 !important;
+    color: #666666 !important;
+}
+
+/* --- AQUÍ LA MAGIA PARA LA BARRA DE DESPLAZAMIENTO MODERNA --- */
+/* Tamaño de la barra */
+.tabla-alumnos-contenedor::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+/* Fondo de la barra */
+.tabla-alumnos-contenedor::-webkit-scrollbar-track {
+    background: #111111; 
+    border-radius: 10px;
+}
+/* El "tirador" de la barra */
+.tabla-alumnos-contenedor::-webkit-scrollbar-thumb {
+    background: #3a3a3a; 
+    border-radius: 10px;
+    border: 2px solid #111111; /* Crea un efecto de separación elegante */
+}
+/* El tirador cuando pasás el mouse */
+.tabla-alumnos-contenedor::-webkit-scrollbar-thumb:hover {
+    background: #4a9eff; /* Cambia al azul SAE al tocarlo */
+}
+
+/* Forzar que las tablas hereden el texto blanco y fondo oscuro */
+.tabla-alumnos-contenedor table {
+    background-color: #111111 !important;
+    color: #ffffff !important;
+}
+
+.tabla-alumnos-contenedor table th {
+    background-color: #0d0d0d !important;
+    color: #4a9eff !important; 
+    border-bottom: 2px solid #4a4a4a !important;
+    font-weight: 600;
+}
+
+/* CORRECCIÓN: Forzamos el color claro en las celdas comunes y quitamos opacidades de Bootstrap */
+.tabla-alumnos-contenedor table td,
+.tabla-alumnos-contenedor table tbody tr td,
+.tabla-alumnos-contenedor table tbody tr td a,
+.tabla-alumnos-contenedor table tbody tr td span:not(.badge) {
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #2d2d2d !important;
+}
+
+/* Efecto hover sobre las filas de la tabla */
+.tabla-alumnos-contenedor table tr:hover td {
+    background-color: #1d1d1d !important; 
+    color: #ffffff !important;
+}

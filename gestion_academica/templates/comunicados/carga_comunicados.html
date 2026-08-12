@@ -1,0 +1,45 @@
+{% extends "usuarios/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-white mb-0"><i class="fa-solid fa-pen-fancy text-success me-2"></i>Redactar Nuevo Comunicado</h3>
+                <a href="{% url 'lista_comunicados' %}" class="btn btn-outline-light btn-sm">Cancelar</a>
+            </div>
+
+            <div class="card bg-dark text-white border-0 shadow-sm p-4">
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Título del Anuncio</label>
+                        {{ form.titulo }}
+                        {% if form.titulo.errors %}<div class="text-danger small mt-1">{{ form.titulo.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Público / Visibilidad</label>
+                        {{ form.visibilidad }}
+                        <div class="form-text text-muted">Seleccioná qué grupo de usuarios tendrá permitido ver esta publicación en su panel.</div>
+                        {% if form.visibilidad.errors %}<div class="text-danger small mt-1">{{ form.visibilidad.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Contenido</label>
+                        {{ form.contenido }}
+                        {% if form.contenido.errors %}<div class="text-danger small mt-1">{{ form.contenido.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-success px-4 fw-bold">
+                            <i class="fa-solid fa-share-from-square me-2"></i> PUBLICAR AHORA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "usuarios/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <div class="card shadow-sm border-0 bg-light text-dark mb-4">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fa-solid fa-file-excel me-2 text-success"></i> Importación Masiva de Profesores
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <p class="text-muted small mb-0 me-3">
+                            Subí el archivo Excel (.xlsx) con los datos unificados del cuerpo docente. El sistema procesará cada fila dando de alta las credenciales de usuario y los perfiles de profesores de manera automática.
+                        </p>
+                        <a href="{% static 'imports/plantilla_profesores.xlsx' %}" class="btn btn-outline-success btn-sm text-nowrap" download>
+                            <i class="fa-solid fa-download me-1"></i> Descargar Plantilla
+                        </a>
+                    </div>
+                    
+                    <form id="form-importacion" method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            {{ form.archivo_excel }}
+                            {% if form.archivo_excel.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.archivo_excel.errors|first }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'listado_profesor' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Volver al Listado
+                            </a>
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Procesar Excel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if resultados %}
+                <div class="card shadow-sm border-0 bg-light text-dark">
+                    <div class="card-header bg-secondary text-white py-2">
+                        <h6 class="mb-0 small"><i class="fa-solid fa-square-poll-horizontal me-2"></i> Estado de la Carga Actual</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        
+                        {% if resultados.errores %}
+                            <div class="alert alert-danger p-2 mb-3">
+                                <h6 class="alert-heading fw-bold mb-1 small">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Filas rechazadas por validación ({{ resultados.errores|length }})
+                                </h6>
+                                <div style="max-height: 200px; overflow-y: auto;" class="small">
+                                    <ul class="list-unstyled mb-0">
+                                        {% for err in resultados.errores %}
+                                            <li class="border-bottom border-danger border-opacity-10 py-1">
+                                                <strong>Fila {{ err.fila }}:</strong> {{ err.alumno }} <br>
+                                                <span class="text-danger font-monospace text-xs">• {{ err.error }}</span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if resultados.exitosos %}
+                            <div class="alert alert-success p-2 mb-0">
+                                <h6 class="alert-heading fw-bold mb-1 small">
+                                    <i class="fa-solid fa-circle-check"></i> Profesores procesados y guardados ({{ resultados.exitosos|length }})
+                                </h6>
+                                <div style="max-height: 200px; overflow-y: auto;" class="small">
+                                    <ul class="list-unstyled mb-0">
+                                        {% for exi in resultados.exitosos %}
+                                            <li class="border-bottom border-success border-opacity-10 py-1">
+                                                <strong>Fila {{ exi.fila }}:</strong> {{ exi.alumno }} — <span class="text-muted">{{ exi.detalle }}</span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<div id="loading-overlay" class="d-none position-fixed top-0 left-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="background: rgba(26, 26, 26, 0.85); z-index: 9999;">
+    <div class="text-center">
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 3.5rem; height: 3.5rem;">
+            <span class="visually-hidden">Procesando...</span>
+        </div>
+        <h4 class="text-white mb-2">Procesando Archivo Excel...</h4>
+        <p class="text-muted">Por favor, no cierres la ventana ni recargues la página. Esto puede tomar unos minutos.</p>
+        
+        <div class="progress bg-dark mt-3 mx-auto" style="height: 6px; width: 250px; border: 1px solid #4a4a4a;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formulario = document.getElementById('form-importacion');
+        const overlay = document.getElementById('loading-overlay');
+
+        if (formulario && overlay) {
+            formulario.addEventListener('submit', function() {
+                // Removemos 'd-none' para activar el loader cuando arranca el procesamiento
+                overlay.classList.remove('d-none');
+            });
+        }
+    });
+</script>
+{% endblock %}

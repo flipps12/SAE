@@ -1,0 +1,201 @@
+/* ==========================================================================
+   RESPONSIVE / MOBILE FIRST
+   Compatible con todos los templates del sistema SAE26
+   ========================================================================== */
+
+/* ---------- Reglas base (aplican siempre) ---------- */
+html {
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* Evita que los contenidos internos desborden la pantalla */
+.container, .container-fluid {
+    padding-right: 1rem;
+    padding-left: 1rem;
+}
+
+/* Contenedores de tablas: permiten scroll horizontal y vertical táctil */
+.tabla-alumnos-contenedor {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+/* Tablas amplias: se mantienen legibles, se deslizan en vez de aplastarse */
+.tabla-alumnos-contenedor .table-sae,
+.tabla-alumnos-contenedor > table {
+    min-width: 600px;
+}
+
+/* Encabezados de página con botones: permiten salto de línea ordenado */
+.d-flex.justify-content-between {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* ---------- Móviles / Tablets pequeñas ---------- */
+@media (max-width: 767.98px) {
+
+    /* Tipografías de títulos */
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; word-break: break-word; }
+    h3 { font-size: 1.15rem; }
+    h4 { font-size: 1.05rem; }
+
+    /* Tarjetas: menos padding para aprovechar el ancho */
+    .card-body {
+        padding: 1rem !important;
+    }
+    .card-body.p-4 {
+        padding: 1rem !important;
+    }
+
+    /* Botones de acciones de cabecera ocupan todo el ancho */
+    .container-fluid .d-flex.justify-content-between a.btn,
+    .container-fluid .d-flex.justify-content-between .btn,
+    .container .d-flex.justify-content-between a.btn,
+    .container .d-flex.justify-content-between .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Botones de guardar/cancelar al pie de los formularios */
+    .d-flex.justify-content-end.gap-2 {
+        flex-wrap: wrap;
+    }
+    .d-flex.justify-content-end.gap-2 .btn,
+    .d-flex.justify-content-end.gap-2 a.btn {
+        flex: 1 1 auto;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Paginación más compacta */
+    .paginacion-sae .page-link {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    /* Menú del usuario en el navbar */
+    .user-username {
+        display: none;
+    }
+    .btn-user-modern {
+        padding: 6px 10px;
+    }
+
+    /* Contenido del navbar apilado verticalmente en mobile */
+    .navbar-sae-content {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.5rem;
+    }
+    .navbar-sae-content > div:first-child {
+        width: 100%;
+    }
+    .navbar-sae-content .d-flex {
+        justify-content: flex-start !important;
+    }
+
+    /* Dropdowns dentro del navbar colapsado */
+    .navbar-nav .dropdown-menu {
+        position: static !important;
+        border: none;
+        background-color: transparent !important;
+    }
+    .navbar-nav .dropdown-item {
+        padding-left: 1rem;
+    }
+}
+
+/* ---------- Teléfonos ---------- */
+@media (max-width: 575.98px) {
+
+    /* Pantalla de login */
+    .login-card {
+        padding: 1.5rem 1.25rem !important;
+        margin: 1rem;
+        border-radius: 16px !important;
+    }
+    .login-card .logo h2 {
+        font-size: 1.5rem;
+    }
+    .login-card .logo-icon {
+        font-size: 2.4rem;
+    }
+
+    /* Texto animado de los dashboards */
+    .animated-text {
+        font-size: 3rem !important;
+        letter-spacing: 1px;
+    }
+    .center-text {
+        font-size: 3rem !important;
+    }
+    .center-text .text-muted {
+        font-size: 0.8rem !important;
+        letter-spacing: 2px !important;
+    }
+
+    /* Carrusel de estadísticas del dashboard staff */
+    #statsCarousel {
+        width: 100% !important;
+        padding-bottom: 25px !important;
+    }
+    #statsCarousel .carousel-inner {
+        height: auto;
+    }
+    #statsCarousel canvas {
+        max-height: 260px;
+    }
+
+    /* Filtrar formularios: apilar siempre */
+    .row.g-3 [class*="col-md-"],
+    .row.g-3 [class*="col-lg-"] {
+        width: 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Celdas con texto largo */
+    td, th {
+        word-break: break-word;
+    }
+
+    /* Modales: aprovechar la pantalla completa */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    .modal-dialog.modal-xl {
+        max-width: calc(100vw - 1rem);
+    }
+
+    /* Bloques de detalle (ver_alumno, ver_profesor) */
+    .form-control.bg-light,
+    .p-2.border.border-secondary {
+        font-size: 0.9rem;
+    }
+}
+
+/* ---------- Tablets (aplicable también a pantallas medianas) ---------- */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .animated-text {
+        font-size: 4.5rem !important;
+    }
+}
+
+/* ---------- Pantallas de escritorio pequeñas ---------- */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .animated-text {
+        font-size: 5.2rem !important;
+    }
+}

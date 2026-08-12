@@ -1,0 +1,118 @@
+{% extends "usuarios/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'usuarios/css/editar_profesor.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 text-white">
+            Editar Profesor: {{ object.persona.nombre }}, {{ object.persona.apellido }}
+        </h2>
+
+        <a href="{% url 'listado_profesor' %}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Volver al Listado
+        </a>
+    </div>
+
+
+    <!--<h2 class="mb-4 text-white">Editar Profesor: {{ object.persona.nombre }} {{ object.persona.apellido }}</h2>-->
+
+    <form method="POST" class="form-editar-profesor">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+            <h4 class="text-white mb-3">Datos Personales</h4>
+            <div class="row">
+                <div class="col-md-3 form-group"><label>Nombre</label>{{ persona_form.nombre }}</div>
+                <div class="col-md-3 form-group"><label>Apellido</label>{{ persona_form.apellido }}</div>
+                <div class="col-md-2 form-group"><label>DNI</label>{{ persona_form.dni }}</div>
+                <div class="col-md-2 form-group"><label>CUIL</label>{{ persona_form.cuil }}</div>
+                <div class="col-md-2 form-group"><label>Legajo</label>{{ persona_form.numero_legajo }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-3 form-group"><label>Email</label>{{ persona_form.email }}</div>
+                <div class="col-md-3 form-group"><label>Teléfono</label>{{ persona_form.telefono }}</div>
+                <div class="col-md-3 form-group"><label>F. Ingreso</label>{{ persona_form.fecha_ingreso }}</div>
+                <div class="col-md-3 form-group"><label>Tel. Emergencia</label>{{ form.telefono_emergencia }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-9 form-group"><label>Domicilio</label>{{ persona_form.domicilio }}</div>
+                <div class="col-md-3 form-group"><label>F. Nacimiento</label>{{ persona_form.fecha_nacimiento }}</div>
+            </div>
+        </div>
+
+        <h4 class="text-white mt-4">Dictados y Horarios</h4>
+        {{ formset.management_form }}
+        
+        <div class="tabla-alumnos-contenedor" style="overflow-x: auto;">
+            <table class="table-sae">
+                <thead>
+                    <tr>
+                        <th>Materia</th><th>Tipo Mat.</th><th>Curso</th><th>Ciclo Lectivo</th><th>Grupo</th>
+                        <th>PID</th><th>CUPOF</th><th>Sec.</th><th>Toma Posesión</th>
+                        <th>Sit. Revista</th><th>Forma Ingreso</th>
+                        <th>Horarios (Día/Inicio/Fin/Aula)</th>
+                        <th>Borrar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in formset %}
+                    {{ f.id }}
+                    <tr>
+                        <td>{{ f.materia }}</td>
+                        <td>{{ f.instance.materia.get_tipo_display }}</td>
+                        <td>{{ f.curso }}</td>
+                        <td>{{ f.ciclo_lectivo }}</td> 
+                        <td>{{ f.grupo }}</td>
+                        <td>{{ f.pid }}</td>
+                        <td>{{ f.cupof }}</td>
+                        <td>{{ f.secuencia }}</td>
+                        <td>{{ f.toma_posesion }}</td>
+                        <td>{{ f.situacion_revista }}</td>
+                        <td>{{ f.forma_ingreso }}</td>
+                        
+                        <td>
+                            {{ f.horario_formset.management_form }}
+                            {% for h in f.horario_formset %}
+                                <div class="horario-row">
+                                    {{ h.id }}
+                                    {{ h.dia_semana }} {{ h.horario_inicio }} {{ h.horario_fin }} {{ h.aula }}
+                                    
+                                    {% if h.instance.pk %}
+                                        <div style="display:none;">{{ h.DELETE }}</div>
+                                        <a href="javascript:void(0);" onclick="borrarFila(this)" class="text-danger" style="margin-left: 5px;">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </td>
+                        
+                        <td class="text-center">
+                            <div style="display:none;">{{ f.DELETE }}</div>
+                            <a href="javascript:void(0);" onclick="borrarFila(this)" class="text-danger">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Guardar Cambios Totales</button>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'usuarios/js/editar_profesor.js' %}"></script>
+{% endblock %}
+

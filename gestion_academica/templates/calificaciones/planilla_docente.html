@@ -1,4 +1,5 @@
 {% extends "usuarios/base.html" %}
+{% load l10n %}
 
 {% block content %}
 <div class="container-fluid mt-4 text-white">
@@ -129,7 +130,7 @@
                         {% for nota in fila.notas_columnas %}
                         <td class="p-1 border-end border-secondary text-center">
                             {% if nota.id %}
-                                <input type="number" name="nota_existente_{{ nota.id }}" value="{{ nota.valor }}" class="form-control form-control-sm mx-auto text-center fw-bold" min="1" max="10" style="max-width: 50px; background-color: #2b3035; color: #fff;">
+                                <input type="number" name="nota_existente_{{ nota.id }}" value="{{ nota.valor|unlocalize }}" class="form-control form-control-sm mx-auto text-center fw-bold" min="1" max="10" style="max-width: 50px; background-color: #2b3035; color: #fff;">
                             {% else %}
                                 <input type="number" name="nota_nueva_celda_{{ nota.identificador_vacio }}" value="" class="form-control form-control-sm mx-auto text-center opacity-70" min="1" max="10" placeholder="-" style="max-width: 50px; background-color: #1f2327; border: 1px dashed #6c757d;">
                             {% endif %}
@@ -140,7 +141,7 @@
                         {% for etapa_nota in fila.etapas_columnas %}
                         <td class="p-1 border-end border-info bg-dark bg-opacity-25 text-center">
                             {% if etapa_nota.id %}
-                                <input type="number" name="etapa_existente_{{ etapa_nota.id }}" value="{{ etapa_nota.valor_numerico }}" class="form-control form-control-sm mx-auto text-center fw-bold text-info border-info" min="1" max="10" style="max-width: 50px; background-color: #212529;">
+                                <input type="number" name="etapa_existente_{{ etapa_nota.id }}" value="{{ etapa_nota.valor_numerico|unlocalize }}" class="form-control form-control-sm mx-auto text-center fw-bold text-info border-info" min="1" max="10" style="max-width: 50px; background-color: #212529;">
                             {% else %}
                                 <input type="number" name="etapa_nueva_celda_{{ etapa_nota.identificador_vacio }}" value="" class="form-control form-control-sm mx-auto text-center text-info" min="1" max="10" placeholder="-" style="max-width: 50px; background-color: #1f2327; border: 1px dashed #0dcaf0;">
                             {% endif %}
@@ -152,7 +153,7 @@
                         <td class="p-1 border-end border-danger bg-dark bg-opacity-25 text-center">
                             {% if int_nota.id %}
                                 <!-- Si existe, se vincula directo a su ID real de base de datos -->
-                                <input type="number" step="0.01" name="intensificacion_existente_{{ int_nota.id }}" value="{{ int_nota.valor }}" class="form-control form-control-sm mx-auto text-center fw-bold text-danger border-danger" min="1" max="10" style="max-width: 55px; background-color: #212529;">
+                                <input type="number" step="0.01" name="intensificacion_existente_{{ int_nota.id }}" value="{{ int_nota.valor|unlocalize }}" class="form-control form-control-sm mx-auto text-center fw-bold text-danger border-danger" min="1" max="10" style="max-width: 55px; background-color: #212529;">
                             {% else %}
                                 <!-- Si está vacío, permite completarlo respetando la fecha de la columna -->
                                 <input type="number" step="0.01" name="intensificacion_nueva_celda_{{ int_nota.identificador_vacio }}" value="" class="form-control form-control-sm mx-auto text-center text-danger" min="1" max="10" placeholder="-" style="max-width: 55px; background-color: #1f2327; border: 1px dashed #dc3545;">
